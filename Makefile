@@ -1,6 +1,6 @@
 # product options
-PRODUCT_ONE_NAME = product_one
-PRODUCT_TWO_NAME = product_two
+COMPILER_NAME = comp
+CONSOLE_NAME = vm
 
 # compiler options
 CC = gcc
@@ -18,23 +18,23 @@ SRCDIR = $(MAINDIR)/src
 INCDIR = $(MAINDIR)/include
 BINDIR = $(MAINDIR)/bin
 OBJDIR = $(BINDIR)/obj
-PRODUCT_ONE_OBJDIR = $(OBJDIR)/$(PRODUCT_ONE_NAME)-obj
-PRODUCT_TWO_OBJDIR = $(OBJDIR)/$(PRODUCT_TWO_NAME)-obj
+COMPILER_OBJDIR = $(OBJDIR)/$(COMPILER_NAME)-obj
+CONSOLE_OBJDIR = $(OBJDIR)/$(CONSOLE_NAME)-obj
 
 # file stuff
 SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(addprefix $(OBJDIR)/, $(notdir $(patsubst %.c, %.o, $(SRCS))))
-PRODUCT_ONE_BIN = $(BINDIR)/$(PRODUCT_ONE_NAME)
-PRODUCT_TWO_BIN = $(BINDIR)/$(PRODUCT_TWO_NAME)
+COMPILER_BIN = $(BINDIR)/$(COMPILER_NAME)
+CONSOLE_BIN = $(BINDIR)/$(CONSOLE_NAME)
 
 
 # make stuff
 export CC CXXFLAGS LDFLAGS RM MKDIR 
 export MAKEDIR SRCDIR INCDIR BINDIR SRCS OBJS
-export PRODUCT_ONE_NAME PRODUCT_ONE_OBJDIR PRODUCT_ONE_BIN 
-export PRODUCT_TWO_NAME PRODUCT_TWO_OBJDIR PRODUCT_TWO_BIN
+export COMPILER_NAME COMPILER_OBJDIR COMPILER_BIN 
+export CONSOLE_NAME CONSOLE_OBJDIR CONSOLE_BIN
 .MAIN: all
-all: $(PRODUCT_ONE_NAME) $(PRODUCT_TWO_NAME)
+all: $(COMPILER_NAME) $(CONSOLE_NAME)
 
 YELLOW = \033[0;33m$$(tput bold)
 NC= \033[0m$$(tput sgr0)
@@ -47,17 +47,17 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c | makedirs
 	@$(CC) $(CXXFLAGS) -I $(INCDIR) -o $@ -c $<
 	@printf "\b\b done!\n"
 
-$(PRODUCT_ONE_NAME): $(OBJS) | makedirs
-	@$(MAKE) --no-print-directory -f $(MAINDIR)/make/$(PRODUCT_ONE_NAME).mk $(PRODUCT_ONE_BIN)
+$(COMPILER_NAME): $(OBJS) | makedirs
+	@$(MAKE) --no-print-directory -f $(MAINDIR)/make/compiler.mk $(COMPILER_BIN)
 
-$(PRODUCT_TWO_NAME): $(OBJS) | makedirs
-	@$(MAKE) --no-print-directory -f $(MAINDIR)/make/$(PRODUCT_TWO_NAME).mk $(PRODUCT_TWO_BIN)
+$(CONSOLE_NAME): $(OBJS) | makedirs
+	@$(MAKE) --no-print-directory -f $(MAINDIR)/make/console.mk $(CONSOLE_BIN)
 
 
 makedirs:
 	@$(MKDIR) -p $(BINDIR)
-	@$(MKDIR) -p $(PRODUCT_ONE_OBJDIR)
-	@$(MKDIR) -p $(PRODUCT_TWO_OBJDIR)
+	@$(MKDIR) -p $(COMPILER_OBJDIR)
+	@$(MKDIR) -p $(CONSOLE_OBJDIR)
 
 clean:
 	@$(RM) -rf $(BINDIR)
@@ -73,7 +73,7 @@ newfile: guard-name | guard-type
 
 guard-%: # make sure variable exists
 	@ if [ "${${*}}" = "" ]; then \
-		echo "Environment variable $* not set (name=\"name\" and type=\"<empty>|$(PRODUCT_ONE_NAME)|$(PRODUCT_TWO_NAME)\" required)"; \
+		echo "Environment variable $* not set (name=\"name\" and type=\"<empty>|$(COMPILER_NAME)|$(CONSOLE_NAME)\" required)"; \
 		exit 1; \
 	fi
 
