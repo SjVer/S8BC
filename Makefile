@@ -1,10 +1,12 @@
 # product options
-COMPILER_NAME = comp
-CONSOLE_NAME = vm
+AS_NAME = as
+VM_NAME = vm
 
 # compiler options
-CC = gcc
-CXXFLAGS = -std=c11 -Wall -lm
+CC = clang++
+MUTE = # varargs write-strings sign-compare unused-function comment dangling-gsl unknown-warning-option c++17-extensions
+DEFS = 
+CXXFLAGS = -Iinclude -Wall $(addprefix -Wno-,$(MUTE)) $(addprefix -D,$(DEFS))
 LDFLAGS = 
 
 # command options
@@ -13,67 +15,58 @@ MKDIR = mkdir
 TC = touch
 
 # dir stuff
+EXT = .cpp
 MAINDIR = $(PWD)
-SRCDIR = $(MAINDIR)/src
-INCDIR = $(MAINDIR)/include
+AS_DIR = as
+VM_DIR = vm
 BINDIR = $(MAINDIR)/bin
 OBJDIR = $(BINDIR)/obj
-COMPILER_OBJDIR = $(OBJDIR)/$(COMPILER_NAME)-obj
-CONSOLE_OBJDIR = $(OBJDIR)/$(CONSOLE_NAME)-obj
+AS_OBJDIR = $(OBJDIR)/$(AS_NAME)
+VM_OBJDIR = $(OBJDIR)/$(VM_NAME)
 
 # file stuff
-SRCS = $(wildcard $(SRCDIR)/*.c)
-OBJS = $(addprefix $(OBJDIR)/, $(notdir $(patsubst %.c, %.o, $(SRCS))))
-COMPILER_BIN = $(BINDIR)/$(COMPILER_NAME)
-CONSOLE_BIN = $(BINDIR)/$(CONSOLE_NAME)
-
+AS_BIN = $(BINDIR)/$(AS_NAME)
+VM_BIN = $(BINDIR)/$(VM_NAME)
 
 # make stuff
-export CC CXXFLAGS LDFLAGS RM MKDIR 
-export MAKEDIR SRCDIR INCDIR BINDIR SRCS OBJS
-export COMPILER_NAME COMPILER_OBJDIR COMPILER_BIN 
-export CONSOLE_NAME CONSOLE_OBJDIR CONSOLE_BIN
+export CC CXXFLAGS LDFLAGS RM MKDIR  EXT
+export AS_NAME AS_DIR AS_OBJDIR AS_BIN 
+export VM_NAME VM_DIR VM_OBJDIR VM_BIN
+
 .MAIN: all
-all: $(COMPILER_NAME) $(CONSOLE_NAME)
+all: $(AS_NAME) $(VM_NAME)
 
 YELLOW = \033[0;33m$$(tput bold)
 NC= \033[0m$$(tput sgr0)
 
 # targets
 
-# $(OBJS): $(SRCS) | makedirs
-$(OBJDIR)/%.o: $(SRCDIR)/%.c | makedirs
-	@printf "$(YELLOW)[general    ]$(NC) compiling $(YELLOW)$(notdir $<)$(NC) into $(YELLOW)$(notdir $@)$(NC)..."
-	@$(CC) $(CXXFLAGS) -I $(INCDIR) -o $@ -c $<
-	@printf "\b\b done!\n"
+$(AS_NAME): makedirs
+	@$(MAKE) --no-print-directory -f $(AS_DIR)/Makefile $(AS_BIN)
 
-$(COMPILER_NAME): $(OBJS) | makedirs
-	@$(MAKE) --no-print-directory -f $(MAINDIR)/make/compiler.mk $(COMPILER_BIN)
-
-$(CONSOLE_NAME): $(OBJS) | makedirs
-	@$(MAKE) --no-print-directory -f $(MAINDIR)/make/console.mk $(CONSOLE_BIN)
+$(VM_NAME): makedirs
+	@$(MAKE) --no-print-directory -f $(VM_DIR)/Makefile $(VM_BIN)
 
 
 makedirs:
 	@$(MKDIR) -p $(BINDIR)
-	@$(MKDIR) -p $(COMPILER_OBJDIR)
-	@$(MKDIR) -p $(CONSOLE_OBJDIR)
+	@$(MKDIR) -p $(AS_OBJDIR)
+	@$(MKDIR) -p $(VM_OBJDIR)
 
 clean:
 	@$(RM) -rf $(BINDIR)
-	@printf "$(YELLOW)Cleaned!\n$(NC)"
-
+#	@printf "$(YELLOW)cleaned!\n$(NC)"
 
 
 # new file creator
 newfile: guard-name | guard-type
-	$(TC) $(SRCDIR)/$(type)/$(name).c
-	$(TC) $(INCDIR)/$(type)/$(name).h
+	$(TC) $(type)/src/$(name).cpp
+	$(TC) $(type)/include/$(name).hpp
 
 
 guard-%: # make sure variable exists
 	@ if [ "${${*}}" = "" ]; then \
-		echo "Environment variable $* not set (name=\"name\" and type=\"<empty>|$(COMPILER_NAME)|$(CONSOLE_NAME)\" required)"; \
+		echo "Argument $* not given (name=\"name\" and type=\"<empty>|$(AS_NAME)|$(VM_NAME)\" required)"; \
 		exit 1; \
 	fi
 
