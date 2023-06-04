@@ -1,9 +1,5 @@
-# product options
-AS_NAME = as
-VM_NAME = vm
-
 # compiler options
-CC = clang++
+CC = clang
 MUTE = # varargs write-strings sign-compare unused-function comment dangling-gsl unknown-warning-option c++17-extensions
 DEFS = 
 CXXFLAGS = -Iinclude -Wall $(addprefix -Wno-,$(MUTE)) $(addprefix -D,$(DEFS))
@@ -14,59 +10,58 @@ RM = rm
 MKDIR = mkdir
 TC = touch
 
-# dir stuff
-EXT = .cpp
-MAINDIR = $(PWD)
-AS_DIR = as
-VM_DIR = vm
-BINDIR = $(MAINDIR)/bin
+# ===================== variables =====================
+
+EXT = .c
+SRCDIR = src
+INCDIR = include
+BINDIR = bin
 OBJDIR = $(BINDIR)/obj
-AS_OBJDIR = $(OBJDIR)/$(AS_NAME)
-VM_OBJDIR = $(OBJDIR)/$(VM_NAME)
 
-# file stuff
-AS_BIN = $(BINDIR)/$(AS_NAME)
-VM_BIN = $(BINDIR)/$(VM_NAME)
+PRODUCTS = $(notdir $(wildcard $(SRCDIR)/*))
 
-# make stuff
-export CC CXXFLAGS LDFLAGS RM MKDIR  EXT
-export AS_NAME AS_DIR AS_OBJDIR AS_BIN 
-export VM_NAME VM_DIR VM_OBJDIR VM_BIN
+Y = \033[0;33m$$(tput bold)
+P = \033[1;35m$$(tput bold)
+N = \033[0m$$(tput sgr0)
+
+# ===================== targets =====================
 
 .MAIN: all
-all: $(AS_NAME) $(VM_NAME)
+all: $(PRODUCTS)
 
-YELLOW = \033[0;33m$$(tput bold)
-NC= \033[0m$$(tput sgr0)
+define make-target
+$1-SRCDIR = $(SRCDIR)/$1
+$1-INCDIR = $(INCDIR)/$1
+$1-OBJDIR = $(OBJDIR)/$1
 
-# targets
+$1-SRC = $$(wildcard $$($1-SRCDIR)/*$(EXT))
+$1-OBJ = $$($1-SRC:$$($1-SRCDIR)/%$(EXT)=$$($1-OBJDIR)/%.o)
 
-$(AS_NAME): makedirs
-	@$(MAKE) --no-print-directory -f $(AS_DIR)/Makefile $(AS_BIN)
+$1: $$($1-OBJ)
+	@printf "$(Y)[$1]$(N) compiling final product $(P)$$@$(N)..."
+	@$(CC) $(CXXFLAGS) -o $(BINDIR)/$$@ $$^ $(LDFLAGS)
+	@printf "\b\b done!\n"
 
-$(VM_NAME): makedirs
-	@$(MAKE) --no-print-directory -f $(VM_DIR)/Makefile $(VM_BIN)
+$$($1-OBJDIR)/%.o: $$($1-SRCDIR)/%$(EXT) | makedirs
+	@printf "$(Y)[$1]$(N) compiling $(P)$$(notdir $$<)$(N)..."
+	@$(CC) $(CXXFLAGS) -I$(INCDIR) -I$$($1-INCDIR) -o $$@ -c $$<
+	@printf "\b\b done!\n"
 
+clean-$1:
+	@$(RM) -rf $$($1-OBJDIR)
+	@$(RM) $(BINDIR)/$1
+endef
+
+$(foreach p,$(PRODUCTS),$(eval $(call make-target,$(p))))
+
+# ===================== TOOLS =====================
+
+list-products:
+	@echo $(PRODUCTS)
 
 makedirs:
 	@$(MKDIR) -p $(BINDIR)
-	@$(MKDIR) -p $(AS_OBJDIR)
-	@$(MKDIR) -p $(VM_OBJDIR)
+	@$(foreach p,$(PRODUCTS),$(MKDIR) -p $(OBJDIR)/$(p);)
 
 clean:
 	@$(RM) -rf $(BINDIR)
-#	@printf "$(YELLOW)cleaned!\n$(NC)"
-
-
-# new file creator
-newfile: guard-name | guard-type
-	$(TC) $(type)/src/$(name).cpp
-	$(TC) $(type)/include/$(name).hpp
-
-
-guard-%: # make sure variable exists
-	@ if [ "${${*}}" = "" ]; then \
-		echo "Argument $* not given (name=\"name\" and type=\"<empty>|$(AS_NAME)|$(VM_NAME)\" required)"; \
-		exit 1; \
-	fi
-
