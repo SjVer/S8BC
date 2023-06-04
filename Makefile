@@ -1,7 +1,7 @@
 # compiler options
 CC = clang
-MUTE = # varargs write-strings sign-compare unused-function comment dangling-gsl unknown-warning-option c++17-extensions
-DEFS = 
+MUTE = 
+DEFS = COMPILER=\"$(CC)\" APP_VERSION_PATCH=\"$(shell git rev-parse --short HEAD)\"
 CXXFLAGS = -Iinclude -Wall $(addprefix -Wno-,$(MUTE)) $(addprefix -D,$(DEFS))
 LDFLAGS = 
 
@@ -20,6 +20,9 @@ OBJDIR = $(BINDIR)/obj
 
 PRODUCTS = $(notdir $(wildcard $(SRCDIR)/*))
 
+SRC = $(wildcard $(SRCDIR)/*$(EXT))
+OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
+
 Y = \033[0;33m$$(tput bold)
 P = \033[1;35m$$(tput bold)
 N = \033[0m$$(tput sgr0)
@@ -37,14 +40,16 @@ $1-OBJDIR = $(OBJDIR)/$1
 $1-SRC = $$(wildcard $$($1-SRCDIR)/*$(EXT))
 $1-OBJ = $$($1-SRC:$$($1-SRCDIR)/%$(EXT)=$$($1-OBJDIR)/%.o)
 
-$1: $$($1-OBJ)
-	@printf "$(Y)[$1]$(N) compiling final product $(P)$$@$(N)..."
-	@$(CC) $(CXXFLAGS) -o $(BINDIR)/$$@ $$^ $(LDFLAGS)
+$1: $(BINDIR)/$1
+
+$(BINDIR)/$1: $(OBJ) $$($1-OBJ)
+	@printf "$(Y)[$1]$(N) compiling final product $(P)$$(notdir $$@)$(N)..."
+	@$(CC) $(CXXFLAGS) -o $$@ $$^ $(LDFLAGS)
 	@printf "\b\b done!\n"
 
 $$($1-OBJDIR)/%.o: $$($1-SRCDIR)/%$(EXT) | makedirs
 	@printf "$(Y)[$1]$(N) compiling $(P)$$(notdir $$<)$(N)..."
-	@$(CC) $(CXXFLAGS) -I$(INCDIR) -I$$($1-INCDIR) -o $$@ -c $$<
+	@$(CC) $(CXXFLAGS) -I$(INCDIR) -o $$@ -c $$<
 	@printf "\b\b done!\n"
 
 clean-$1:
@@ -53,6 +58,11 @@ clean-$1:
 endef
 
 $(foreach p,$(PRODUCTS),$(eval $(call make-target,$(p))))
+
+$(OBJDIR)/%.o: $(SRCDIR)/%$(EXT) | makedirs
+	@printf "$(Y)[..]$(N) compiling $(P)$(notdir $<)$(N)..."
+	@$(CC) $(CXXFLAGS) -I$(INCDIR) -o $@ -c $<
+	@printf "\b\b done!\n"
 
 # ===================== TOOLS =====================
 

@@ -1,5 +1,5 @@
 #pragma once
-#define VM_COMMON_H
+#define AS_COMMON_H
 
 #include "../common.h"
 
@@ -8,9 +8,9 @@
 
 // app info
 #pragma region
-#define APP_NAME PROJECT_NAME_INTERNAL "-vm"
+#define APP_NAME PROJECT_NAME_INTERNAL "-as"
 #define APP_DOC \
-    APP_NAME " -- The " PROJECT_NAME " virtual machine.\n" \
+    APP_NAME " -- The " PROJECT_NAME " assembler.\n" \
     "\v" \
     "More information at " PROJECT_LINK ".\n" \
     "Build: " __DATE__ " " __TIME__ " on " OS_NAME " (" COMPILER ")"
@@ -28,7 +28,6 @@
 #pragma endregion
 
 extern struct cli_args {
+    char* asm_file;
     bool verbose;
-    char* rom_file;
-    bool debug;
 } cli_args;
