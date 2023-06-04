@@ -4,8 +4,9 @@
 #include "as/common.h"
 
 struct cli_args cli_args = {
-    .asm_file = NULL,
     .verbose = false,
+    .asm_file = NULL,
+    .out_file = NULL,
 };
 
 // CLI argument stuff
@@ -16,10 +17,11 @@ const char* argp_program_bug_address = "\b\b\bat " PROJECT_LINK;
 static char args_doc[] = "[assembly file]";
 
 static struct argp_option options[] = {
-    {"help", 	 'h', 0, 0, "Display a help message."},
-    {"version",  'V', 0, 0, "Display version information."},
-    {"usage", 	 'u', 0, 0, "Display a usage information message."},
-    {"verbose",  'v', 0, 0, "Produce verbose output."},
+    {"help", 	 'h', 0,      0, "Display a help message."},
+    {"version",  'V', 0,      0, "Display version information."},
+    {"usage", 	 'u', 0,      0, "Display a usage information message."},
+    {"verbose",  'v', 0,      0, "Produce verbose output."},
+    {"output",   'o', "FILE", 0, "Redirect output to FILE."},
     {0}
 };
 
@@ -46,6 +48,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             args->verbose = true;
             break;
 
+        case 'o':
+            args->out_file = arg;
+            break;
+
         case ARGP_KEY_ARG:
             if (args->asm_file) argp_usage(state);
             args->asm_file = arg;
@@ -65,9 +71,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 int main(int argc, char** argv) {
     if (argp_parse(&argp, argc, argv, 0, 0, &cli_args))
         ABORT(STATUS_CLI_ERROR);
-    
-    Log("assembly file: %s", cli_args.asm_file);
-    Log("verbose: %s", cli_args.verbose ? "true" : "false");
+
+        
 
     return STATUS_SUCCESS;
 }

@@ -28,6 +28,7 @@
 #pragma endregion
 
 extern struct cli_args {
-    char* asm_file;
     bool verbose;
+    char* asm_file;
+    char* out_file;
 } cli_args;
