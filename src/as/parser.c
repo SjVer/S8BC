@@ -66,6 +66,7 @@ static node* parse_directive() {
 			n->type = NODE_RAW_DATA;
 			n->as.raw_data.length = 1;
 			n->as.raw_data.as.byte = l;
+			return n;
 		}
 		case DIR_WORD: {
 			long l = parse_literal(false);
@@ -75,6 +76,7 @@ static node* parse_directive() {
 			n->type = NODE_RAW_DATA;
 			n->as.raw_data.length = 2;
 			n->as.raw_data.as.word = l;
+			return n;
 		}
 		case DIR_STRING: {
 			consume(TOK_STRING);
@@ -85,7 +87,13 @@ static node* parse_directive() {
 			n->type = NODE_RAW_DATA;
 			n->as.raw_data.length = prev_token.length - 2;
 			n->as.raw_data.as.array = (byte*)str;
+			return n;
 		}
+	}
+}
+
+static node* parse_instruction() {
+	switch (prev_token.as.ins) {
 	}
 }
 
