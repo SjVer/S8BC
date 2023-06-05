@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 #include "as/common.h"
+#include "as/lexer.h"
+#include "as/parser.h"
 
 struct cli_args cli_args = {
     .verbose = false,
@@ -70,9 +72,21 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
 int main(int argc, char** argv) {
     if (argp_parse(&argp, argc, argv, 0, 0, &cli_args))
-        ABORT(STATUS_CLI_ERROR);
+        Abort(STATUS_CLI_ERROR);
 
-        
+    // read input file
+    FILE* fp = fopen(cli_args.asm_file, "r");
+    Assert(fp, "could not open file: %s", cli_args.asm_file);
+    fseek(fp, 0, SEEK_END);
+    int size = ftell(fp);
+    rewind(fp);
+    char* source = malloc(size);
+    fread(source, size, 1, fp);
+
+    // init lexer and parser
+    init_lexer(source);
+    init_parser();
+    
 
     return STATUS_SUCCESS;
 }

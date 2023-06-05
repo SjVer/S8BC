@@ -1,4 +1,4 @@
-.reset start
+.byte 0xff
 
 ; start execution
 start:

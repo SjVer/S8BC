@@ -55,12 +55,12 @@
     (printf("[" APP_NAME "] " __VA_ARGS__), putchar('\n'))
 #define Log_err(...) \
     fprintf(stderr, "[" APP_NAME "] ERROR: " __VA_ARGS__)
-#define ABORT(status) \
+#define Abort(status) \
     (Log_err("aborted with status %d", status), exit(status))
-#define INTERNAL_ERROR(...) \
+#define Internal_error(...) \
     (Log_err(__VA_ARGS__), raise(SIGINT))
-#define ASSERT(condition, ...) \
-    {if(!(condition)) INTERNAL_ERROR(__VA_ARGS__);}
+#define Assert(condition, ...) \
+    {if(!(condition)) Internal_error(__VA_ARGS__);}
 
 #pragma endregion
 
@@ -68,8 +68,8 @@ typedef uint8_t byte;
 
 #define STATUS_SUCCESS 0
 #define STATUS_CLI_ERROR 64
-// #define STATUS_PARSE_ERROR 66
-// #define STATUS_TYPE_ERROR 67
-// #define STATUS_CODEGEN_ERROR 68
-// #define STATUS_OUTPUT_ERROR 69
-#define STATUS_INTERNAL_ERROR -1
+#define STATUS_PARSE_ERROR 66
+#define STATUS_TYPE_ERROR 67
+#define STATUS_CODEGEN_ERROR 68
+#define STATUS_OUTPUT_ERROR 69
+#define STATUS_Internal_error -1

@@ -72,11 +72,11 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
 int main(int argc, char** argv) {
     if (argp_parse(&argp, argc, argv, 0, 0, &cli_args))
-        ABORT(STATUS_CLI_ERROR);
+        Abort(STATUS_CLI_ERROR);
     
     // read ROM file
     FILE* fp = fopen(cli_args.rom_file, "rb");
-    ASSERT(fp, "could not open ROM file: %s", cli_args.rom_file);
+    Assert(fp, "could not open ROM file: %s", cli_args.rom_file);
     fseek(fp, 0, SEEK_END);
     word size = ftell(fp);
     rewind(fp);

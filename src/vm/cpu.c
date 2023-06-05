@@ -38,7 +38,7 @@ void reset_cpu(cpu* cpu) {
 }
 
 void load_rom(cpu* cpu, byte* data, word size) {
-    ASSERT(size <= ROM_END - ROM_START, "loaded ROM too large");
+    Assert(size <= ROM_END - ROM_START, "loaded ROM too large");
     memcpy(cpu->memory + ROM_START, data, size);
 }
 
