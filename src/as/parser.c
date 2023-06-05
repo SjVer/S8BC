@@ -15,7 +15,7 @@ static void error_at(token* token, const char* message) {
 	Abort(STATUS_PARSE_ERROR);
 }
 
-static bool advance() {
+static void advance() {
 	prev_token = curr_token;
 
 	for (;;) {
