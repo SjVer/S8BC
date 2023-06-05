@@ -11,8 +11,11 @@ typedef enum {
 } node_type;
 
 typedef struct {
+	bool is_ident;
+	bool is_array;
 	int length;
 	union {
+		char* ident;
 		byte byte;
 		word word;
 		byte* array;
@@ -20,28 +23,31 @@ typedef struct {
 } raw_data_node;
 
 typedef struct {
-	word address;
+	bool is_ident;
+	union {
+		word literal;
+		char* ident;
+	} as;
 } label_node;
 
 typedef struct {
 	instruction instr;
-	bool arg_immediate;
-	enum {
-		ARG_LABEL,
-		ARG_LITERAL
-	} arg_kind;
+	bool has_arg;
+	bool arg_is_imm;
+	bool arg_is_ident;
 	union {
-		char* label;
+		char* ident;
 		word literal;
 	} arg_as;
-} instruction_node;
+} instr_node;
 
 typedef struct node {
+	word address;
 	node_type type;
 	union {
 		raw_data_node raw_data;
 		label_node label;
-		instruction_node instr;
+		instr_node instr;
 	} as;
 	struct node* next;
 } node;

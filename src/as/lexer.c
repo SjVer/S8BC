@@ -13,7 +13,7 @@ void init_lexer(const char* source) {
 }
 
 static bool is_at_end() {
-    return *current == '\0';
+    return *current == 0;
 }
 
 static bool is_digit(char c) {
@@ -45,16 +45,12 @@ static token make_token(token_type type, token_as as) {
     return token;
 }
 
-static token error_token(const char *message) {
-    return make_token(TOK_ERROR, (token_as){.error = message});
-}
-
 static token maybe_directive() {
     while (is_alpha(peek()) || is_digit(peek())) advance();
     int length = current - start;
 
 #define Match(str, dir_)                                              \
-    if (length == strlen("." str) && strncmp(start, "." str, length)) \
+    if (length == strlen("." str) && !strncmp(start, "." str, length)) \
         return make_token(TOK_DIRECTIVE, (token_as){.dir = dir_});    \
 
     Match("reset",  DIR_RESET);
@@ -64,7 +60,8 @@ static token maybe_directive() {
 
 #undef Match
 
-    return error_token("invalid directive");
+    Log_err("invalid directive at line %d", line);
+    Abort(STATUS_PARSE_ERROR);
 }
 
 static token instruction_or_identifier() {
@@ -133,8 +130,10 @@ static token string() {
         advance();
     }
 
-    if (is_at_end())
-        return error_token("unterminated string");
+    if (is_at_end()) {
+        Log_err("unterminated string at line %d", line);
+        Abort(STATUS_PARSE_ERROR);
+    }
 
     // The closing quote.
     advance();
@@ -193,8 +192,10 @@ token scan_next_token() {
     // numbers
     else if (is_digit(c)) return number(false);
     else if (c == '#') {
-        if (!is_digit(advance()))
-            return error_token("expected an immediate value");
+        if (!is_digit(advance())) {
+            Log_err("expected a number at line %d", line);
+            Abort(STATUS_SUCCESS);
+        }
         return number(true);
     }
 
@@ -202,8 +203,9 @@ token scan_next_token() {
     else if (c == '"') return string();
 
     // colon
-    else if (c == ':') return
-        make_token(TOK_COLON, (token_as){0});
+    else if (c == ':')
+        return make_token(TOK_COLON, (token_as){0});
 
-    return error_token("unexpected character");
+    Log_err("unexpected character at line %d: '%c'", line, c);
+    Abort(STATUS_PARSE_ERROR);
 }

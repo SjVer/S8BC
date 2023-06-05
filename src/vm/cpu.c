@@ -17,11 +17,10 @@ void log_status(cpu* cpu) {
     );
 
     byte opcode = cpu->memory[cpu->pc];
-    char* mode = opcode >> 7 ? "ABS" : "IMM";
     Log(
-        "0x%04x: 0x%02x %s (%s %X %d)",
+        "0x%04x: 0x%02x %s (%d %d %d)",
         cpu->pc, opcode, opcode_to_string(opcode),
-        mode, opcode >> 3 & 0xff, opcode & 0b111
+        opcode >> 7, opcode >> 3 & 0xff, opcode & 0b111
     );
 }
 
@@ -38,16 +37,18 @@ void reset_cpu(cpu* cpu) {
 }
 
 void load_rom(cpu* cpu, byte* data, word size) {
-    Assert(size <= ROM_END - ROM_START, "loaded ROM too large");
+    Assert(size <= ROM_SIZE, "loaded ROM too large");
     memcpy(cpu->memory + ROM_START, data, size);
 }
 
 void load_reset_vector(cpu* cpu) {
+    printf("%02x %02x\n", cpu->memory[MEMORY_SIZE - 2], cpu->memory[MEMORY_SIZE - 1]);
+    printf("%02x %02x\n", cpu->memory[RESET_VECTOR], cpu->memory[RESET_VECTOR + 1]);
     cpu->pc = cpu->memory[RESET_VECTOR]
             | cpu->memory[RESET_VECTOR + 1] << 8;
     
     if (cli_args.debug)
-        Log("loaded reset vector: 0x%04x", cpu->pc);
+        Log("loaded reset vector: $%04x", cpu->pc);
 }
 
 void execute_instr(cpu* cpu) {

@@ -4,6 +4,9 @@
 #include "as/common.h"
 #include "as/lexer.h"
 #include "as/parser.h"
+#include "as/address.h"
+#include "as/generate.h"
+#include "as/debug.h"
 
 struct cli_args cli_args = {
     .verbose = false,
@@ -70,23 +73,52 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
 #pragma endregion
 
+char* read_asm_file() {
+    FILE* fp = fopen(cli_args.asm_file, "r");
+    Assert(fp, "could not open file: %s", cli_args.asm_file);
+
+    fseek(fp, 0, SEEK_END);
+    int size = ftell(fp);
+    rewind(fp);
+    
+    char* source = malloc(size + 1);
+    fread(source, size, 1, fp);
+    source[size] = 0;
+
+    return source;
+}
+
+void write_rom_file(byte* data) {
+    const char* f = cli_args.out_file ? cli_args.out_file : "out.rom";
+
+    FILE* fp = fopen(f, "wb");
+    Assert(fp, "could not open file: %s", f);
+
+    fwrite(data, ROM_SIZE, 1, fp);
+    // Assert(written == ROM_SIZE,
+    //     "wrote %zu bytes to ROM instead of %d",
+    //     written, ROM_SIZE);
+}
+
 int main(int argc, char** argv) {
     if (argp_parse(&argp, argc, argv, 0, 0, &cli_args))
         Abort(STATUS_CLI_ERROR);
 
     // read input file
-    FILE* fp = fopen(cli_args.asm_file, "r");
-    Assert(fp, "could not open file: %s", cli_args.asm_file);
-    fseek(fp, 0, SEEK_END);
-    int size = ftell(fp);
-    rewind(fp);
-    char* source = malloc(size);
-    fread(source, size, 1, fp);
+    char* source = read_asm_file();
 
     // init lexer and parser
     init_lexer(source);
     init_parser();
     
+    // parse and solve addresses
+    node* nodes = parse();
+    solve_addresses(nodes);
+    if (cli_args.verbose) log_nodes(nodes);
+
+    // generate and write ROM
+    byte* rom = generate_rom(nodes);
+    write_rom_file(rom);
 
     return STATUS_SUCCESS;
 }

@@ -9,8 +9,6 @@ typedef enum {
     TOK_IMMEDIATE_LITERAL,
     TOK_IDENTIFIER,
     TOK_STRING,
-
-    TOK_ERROR,
     TOK_EOF
 } token_type;
 
