@@ -10,83 +10,125 @@
     Y: the Y register
     PC: the program counter
     SP: the stack pointer
+    
+    OP: the operand
 
-  modes:
-    IMM: immediate (literal operands)
-    ABS: abssolute (address operands)
+  operand modes:
+    IMM: immediate (literal byte)
+    IMP: implied (byte in A)
+    OPX: operand X (byte in/at X)
+    OPY: operand Y (byte in/at Y)
+    ABS: absolute (byte at literal address)
 */
 
-#define Op(mode, kind, nibble) \
-    (mode << 7 | (kind & 0b111) << 4 | nibble & 0xff)
-#define ANY 0
-#define IMM 0
-#define ABS 1
-
 typedef enum opcode {
-    OP_NOP     = 0x00, // no operation
+    OP_NOP,     // no operation
 
     // load/store operations
-    OP_LDA_IMM = Op(IMM, 01, 0x1), // load byte into A
-    OP_LDA_ABS = Op(ABS, 01, 0x1),
-    OP_LDX_IMM = Op(IMM, 01, 0x2), // load byte into X
-    OP_LDX_ABS = Op(ABS, 01, 0x2),
-    OP_LDY_IMM = Op(IMM, 01, 0x3), // load byte into Y
-    OP_LDY_ABS = Op(ABS, 01, 0x4),
-    OP_STA     = Op(ANY, 01, 0x4), // store A in memory
-    OP_STX     = Op(ANY, 01, 0x5), // store X in memory
-    OP_STY     = Op(ANY, 01, 0x6), // store Y in memory
+
+    OP_LDA_IMM, // load OP into A
+    OP_LDA_OPX,
+    OP_LDA_OPY,
+    OP_LDA_ABS,
+
+    OP_LDX_IMM, // load OP into X
+    OP_LDX_OPY,
+    OP_LDX_ABS,
+
+    OP_LDY_IMM, // load OP into Y
+    OP_LDY_OPX,
+    OP_LDY_ABS,
+
+    OP_STA_OPX, // store A at OP
+    OP_STA_OPY,
+    OP_STA_ABS,
+
+    OP_STX_ABS, // store X at OP
+    OP_STY_ABS, // store Y at OP
 
     // register operations
-    OP_TAX     = Op(ANY, 02, 0x1), // transfer A to X
-    OP_TAY     = Op(ANY, 02, 0x2), // transfer A to Y
-    OP_TXA     = Op(ANY, 02, 0x3), // transfer X to A
-    OP_TYA     = Op(ANY, 02, 0x4), // transfer Y to A
-    OP_SAX     = Op(ANY, 02, 0x5), // swap A and X
-    OP_SAY     = Op(ANY, 02, 0x6), // swap A and Y
-    OP_SXY     = Op(ANY, 02, 0x7), // swap X and Y
+
+    OP_TAX,     // transfer A to X
+    OP_TAY,     // transfer A to Y
+    OP_TXA,     // transfer X to A
+    OP_TYA,     // transfer Y to A
+    OP_SAX,     // swap A and X
+    OP_SAY,     // swap A and Y
+    OP_SXY,     // swap X and Y
 
     // stack operations
-    OP_TSX     = Op(ANY, 03, 0x1), // transfer SP to X
-    OP_TXS     = Op(ANY, 03, 0x2), // transfer X to SP
-    OP_PSH     = Op(ANY, 03, 0x3), // push A on stack
-    OP_PLL	   = Op(ANY, 03, 0x4), // pull stack to A
-    OP_POP     = Op(ANY, 03, 0x5), // pop stack to A
+    
+    OP_TSX,     // transfer SP to X
+    OP_TXS,     // transfer X to SP
+
+    OP_PSH_IMM, // push A on stack
+    OP_PSH_IMP,
+    OP_PSH_OPX,
+    OP_PSH_OPY,
+    
+    OP_PLL,	    // pull stack to A
+    OP_POP,     // pop stack to A
 
     // bitwise operations
-    OP_AND_IMM = Op(IMM, 04, 0x1), // A & a byte -> A
-    OP_AND_ABS = Op(ABS, 04, 0x1),
-    OP_IOR_IMM = Op(IMM, 04, 0x2), // A | a byte -> A
-    OP_IOR_ABS = Op(ABS, 04, 0x2),
-    OP_XOR_IMM = Op(IMM, 04, 0x3), // A ^ a byte -> A
-    OP_XOR_ABS = Op(ABS, 04, 0x3),
-    OP_SHL_IMM = Op(IMM, 04, 0x4), // A << a byte -> A
-    OP_SHL_ABS = Op(ABS, 04, 0x4),
-    OP_SHR_IMM = Op(IMM, 04, 0x5), // A >> a byte -> A
-    OP_SHR_ABS = Op(ABS, 04, 0x5),
+
+    OP_AND_IMM, // A & OP -> A
+    OP_AND_OPX,
+    OP_AND_ABS,
+
+    OP_IOR_IMM, // A | OP -> A
+    OP_IOR_OPX,
+    OP_IOR_ABS,
+
+    OP_XOR_IMM, // A ^ OP -> A
+    OP_XOR_OPX,
+    OP_XOR_ABS,
+
+    OP_SHL_IMM, // A << OP -> A
+    OP_SHL_OPX,
+    OP_SHL_ABS,
+
+    OP_SHR_IMM, // A >> OP -> A
+    OP_SHR_OPX,
+    OP_SHR_ABS,
 
     // numerical operations
-    OP_ADD_IMM = Op(IMM, 05, 0x1), // A + a byte -> A
-    OP_ADD_ABS = Op(ABS, 05, 0x1),
-    OP_SUB_IMM = Op(IMM, 05, 0x2), // A - a byte -> A
-    OP_SUB_ABS = Op(ABS, 05, 0x2),
-    OP_MUL_IMM = Op(IMM, 05, 0x3), // A * a byte -> A
-    OP_MUL_ABS = Op(ABS, 05, 0x3),
-    OP_DIV_IMM = Op(IMM, 05, 0x4), // A / a byte -> A
-    OP_DIV_ABS = Op(ABS, 05, 0x4),
-    OP_INA     = Op(ANY, 05, 0x5), // increment A
-    OP_DEA     = Op(ANY, 05, 0x6), // decrement A
-    OP_INC     = Op(ANY, 05, 0x7), // increment byte in memory
-    OP_DEC     = Op(ANY, 05, 0x8), // decrement byte in memory
+
+    OP_ADD_IMM, // A + OP -> A
+    OP_ADD_OPX,
+    OP_ADD_ABS,
+
+    OP_SUB_IMM, // A - OP -> A
+    OP_SUB_OPX,
+    OP_SUB_ABS,
+
+    OP_MUL_IMM, // A * OP -> A
+    OP_MUL_OPX,
+    OP_MUL_ABS,
+    
+    OP_DIV_IMM, // A / OP -> A
+    OP_DIV_OPX,
+    OP_DIV_ABS,
+
+    OP_INC_IMP, // increment OP
+    OP_INC_OPX,
+    OP_INC_OPY,
+    OP_INC_ABS,
+
+    OP_DEC_IMP, // decrement OP
+    OP_DEC_OPX,
+    OP_DEC_OPY,
+    OP_DEC_ABS,
 
     // control flow operations
-    OP_JMP     = Op(ANY, 06, 0x1), // jump to an address
-    OP_JIZ     = Op(ANY, 06, 0x2), // jump if zero flag set
-    OP_JNZ     = Op(ANY, 06, 0x3), // jump if zero flag not set
-    OP_JIC     = Op(ANY, 06, 0x4), // jump if carry flag set
-    OP_JNC     = Op(ANY, 06, 0x5), // jump if carry flag not set
-    OP_CLL     = Op(ANY, 06, 0x6), // call a subroutine
-    OP_RET     = Op(ANY, 06, 0x7), // return from a subroutine
-    OP_HLT     = Op(ANY, 06, 0x8), // halt execution
+
+    OP_JMP,     // jump to OP
+    OP_JIZ,     // jump to OP if zero flag set
+    OP_JNZ,     // jump to OP if zero flag not set
+    OP_JIC,     // jump to OP if carry flag set
+    OP_JNC,     // jump to OP if carry flag not set
+    OP_CLL,     // call a subroutine at OP
+    OP_RET,     // return from a subroutine
+    OP_HLT,     // halt execution
 
 } opcode;
 
@@ -95,4 +137,4 @@ char* opcode_to_string(opcode opcode);
 #undef Op
 #undef IMM
 #undef ABS
-#undef ANY
+#undef NOR

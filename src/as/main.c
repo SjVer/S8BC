@@ -111,13 +111,21 @@ int main(int argc, char** argv) {
     init_lexer(source);
     init_parser();
     
-    // parse and solve addresses
+    // parse
     node* nodes = parse();
+    if (cli_args.verbose) log_nodes(nodes);
+
+    // solve addresses
     solve_addresses(nodes);
     if (cli_args.verbose) log_nodes(nodes);
 
     // generate and write ROM
     byte* rom = generate_rom(nodes);
+    if (cli_args.verbose) {
+        Log("written reset vector: $%04x",
+            rom[RESET_VECTOR - ROM_START] |
+            rom[RESET_VECTOR - ROM_START + 1] << 8);
+    }
     write_rom_file(rom);
 
     return STATUS_SUCCESS;

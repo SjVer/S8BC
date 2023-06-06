@@ -5,15 +5,17 @@ typedef enum {
     TOK_COLON,
     TOK_DIRECTIVE,
     TOK_INSTRUCTION,
-    TOK_LITERAL,
-    TOK_IMMEDIATE_LITERAL,
-    TOK_IDENTIFIER,
+    TOK_REGISTER_X,
+    TOK_REGISTER_Y,
+    TOK_ABS_LITERAL,
+    TOK_IMM_LITERAL,
+    TOK_ABS_IDENTIFIER,
+    TOK_IMM_IDENTIFIER,
     TOK_STRING,
     TOK_EOF
 } token_type;
 
 typedef enum {
-    DIR_RESET,
     DIR_BYTE,
     DIR_WORD,
     DIR_STRING,
@@ -51,8 +53,6 @@ typedef enum {
     INS_SUB,
     INS_MUL,
     INS_DIV,
-    INS_INA,
-    INS_DEA,
     INS_INC,
     INS_DEC,
 
@@ -77,6 +77,7 @@ typedef struct {
         directive dir;
         instruction ins;
         const char* error;
+        long literal;
     } as;
 } token;
 

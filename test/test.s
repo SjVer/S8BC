@@ -1,12 +1,16 @@
-  ; .byte 255
-  ; .word 32768
-
-; start execution
 start:
-  lda #1
-loop:
-  add #1
-  jmp loop
+  lda #97 ; 'a'
+  ldx #$0A ; ptr
 
-65533:
-  .word start
+loop:
+  sta x ; store char at ptr
+  inc ; incr char
+  dec x; decr ptr
+  jiz end
+
+end:
+  hlt
+
+; reset vector
+$fffc:
+  .word #start

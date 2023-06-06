@@ -8,13 +8,19 @@ struct label {
     struct label* next;
 }* labels;
 
+word prev_address;
 word curr_address;
 
 static void set_curr_addr(int address) {
-    if (address < ROM_START || address > ROM_END) {
-        Log_err("addresses exceeded ROM bounds");
+    // only check prev_address so that the incrementing
+    // after writing to ROM_END doesn't cause an error
+
+    if (prev_address < ROM_START || prev_address > ROM_END) {
+        Log_err("address exceeded ROM bounds ($%04x)", prev_address);
         Abort(STATUS_CODEGEN_ERROR);
     }
+
+    prev_address = curr_address;
     curr_address = address;
 }
 
@@ -45,7 +51,13 @@ static void add_labels_in_node(node* n) {
     }
     else if (n->type == NODE_INSTRUCTION) {
         instr_node i = n->as.instr;
-        incr_curr_addr(1 + i.has_arg + !i.arg_is_imm);
+        incr_curr_addr(1);
+        if (i.arg_type == TOK_IMM_IDENTIFIER
+            || i.arg_type == TOK_IMM_LITERAL)
+            incr_curr_addr(1);
+        else if (i.arg_type == TOK_ABS_IDENTIFIER
+            || i.arg_type == TOK_ABS_LITERAL)
+            incr_curr_addr(2);
     }
 }
 
@@ -87,14 +99,25 @@ static void solve_node_address(node* n) {
         n->address = curr_address;
 
         instr_node* i = &n->as.instr;
-        incr_curr_addr(1 + i->has_arg + !i->arg_is_imm);
-        if (i->has_arg) {
-            if (i->arg_is_ident) {
-                word addr = find_label(i->arg_as.ident);
-                free(i->arg_as.ident);
-                i->arg_is_ident = false;
-                i->arg_as.literal = addr;
-            }
+        incr_curr_addr(1);
+
+        if (i->arg_type == TOK_IMM_LITERAL) incr_curr_addr(1);
+        else if (i->arg_type == TOK_IMM_IDENTIFIER) {
+            incr_curr_addr(1);
+
+            word addr = find_label(i->as.ident);
+            free(i->as.ident);
+            i->arg_type = TOK_IMM_LITERAL;
+            i->as.imm_literal = addr & 0xff;
+        }
+        else if (i->arg_type == TOK_ABS_LITERAL) incr_curr_addr(2);
+        else if (i->arg_type == TOK_ABS_IDENTIFIER) {
+            incr_curr_addr(2);
+
+            word addr = find_label(i->as.ident);
+            free(i->as.ident);
+            i->arg_type = TOK_ABS_LITERAL;
+            i->as.literal = addr;
         }
     }
 }
@@ -102,7 +125,7 @@ static void solve_node_address(node* n) {
 void solve_addresses(node* nodes) {
     // add labels
     labels = NULL;
-    set_curr_addr(ROM_START);
+    prev_address = curr_address = ROM_START;
     node* curr = nodes;
     while (curr) {
         add_labels_in_node(curr);
@@ -110,7 +133,7 @@ void solve_addresses(node* nodes) {
     }
 
     // generate addresses
-    set_curr_addr(ROM_START);
+    prev_address = curr_address = ROM_START;
     curr = nodes;
     while (curr) {
         solve_node_address(curr);

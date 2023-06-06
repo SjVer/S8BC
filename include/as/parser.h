@@ -32,13 +32,12 @@ typedef struct {
 
 typedef struct {
 	instruction instr;
-	bool has_arg;
-	bool arg_is_imm;
-	bool arg_is_ident;
+	token_type arg_type;
 	union {
 		char* ident;
+		byte imm_literal;
 		word literal;
-	} arg_as;
+	} as;
 } instr_node;
 
 typedef struct node {

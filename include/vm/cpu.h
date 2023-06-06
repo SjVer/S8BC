@@ -22,7 +22,7 @@ typedef struct cpu {
 void log_status(cpu* cpu);
 
 void reset_cpu(cpu* cpu);
-void load_rom(cpu* cpu, byte* data, word size);
+void load_rom(cpu* cpu, byte* data);
 void load_reset_vector(cpu* cpu);
 
 void execute_instr(cpu* cpu);

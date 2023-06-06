@@ -6,11 +6,13 @@ token prev_token, curr_token;
 
 void init_parser() {}
 
-static void error_at(token* token, const char* message) {
-    if (token->type == TOK_EOF)
+static void error_at(token* t, const char* message) {
+    if (t->type == TOK_EOF)
         Log_err("%s at end", message);
-    else
-        Log_err("%s at line %d", message, token->line);
+    else {
+        Log_err("%s at line %d", message, t->line);
+        Log_err("(erroneous token: '%.*s')", t->length, t->start);
+    }
 
     Abort(STATUS_PARSE_ERROR);
 }
@@ -40,32 +42,24 @@ static void consume(token_type type, const char* what) {
     }
 }
 
-static long parse_literal(bool immediate) {
-    if (immediate)
-        consume(TOK_IMMEDIATE_LITERAL,
-            "an immediate literal value");
-    else consume(TOK_LITERAL, "a literal value");
-
-    // safe thanks to the lexer
-    return strtoul(prev_token.start + immediate, NULL, 10);
+static char* copy_identifier(const char* start, int length) {
+    char* str = malloc(length + 1);
+    strncpy(str, start, length);
+    str[length] = 0;
+    return str;
 }
 
 static node* parse_directive() {
     switch (prev_token.as.dir) {
-        case DIR_RESET: {
-            error_at(&prev_token, "not yet implemented");
-        }
-
         case DIR_BYTE: {
-            long l = parse_literal(false);
-            if (l > 0xff) error_at(&prev_token, "byte literal large");
+            consume(TOK_IMM_LITERAL, "an immediate literal");
 
             node* n = malloc(sizeof(node));
             n->type = NODE_RAW_DATA;
             n->as.raw_data.is_array = false;
             n->as.raw_data.is_ident = false;
             n->as.raw_data.length = 1;
-            n->as.raw_data.as.byte = l;
+            n->as.raw_data.as.byte = prev_token.as.literal;
             return n;
         }
         case DIR_WORD: {
@@ -74,69 +68,73 @@ static node* parse_directive() {
             n->as.raw_data.is_array = false;
             n->as.raw_data.length = 2;
 
-            if (match(TOK_IDENTIFIER)) {
-                char* str = malloc(prev_token.length + 1);
-                strncpy(str, prev_token.start, prev_token.length);
-                str[prev_token.length] = 0;
-                
+            if (match(TOK_IMM_IDENTIFIER)) {
                 n->as.raw_data.is_ident = true;
-                n->as.raw_data.as.ident = str;
+                n->as.raw_data.as.ident = copy_identifier(
+                    prev_token.start + 1, prev_token.length - 1);
             } else {
-                long l = parse_literal(false);
-                if (l > 0xffff) error_at(&prev_token, "word literal too large");
-
                 n->as.raw_data.is_ident = false;
-                n->as.raw_data.as.word = l;
+                n->as.raw_data.as.word = prev_token.as.literal;
             }
             return n;
         }
         case DIR_STRING: {
             consume(TOK_STRING, "a string");
-            char* str = malloc(prev_token.length - 1);
-            strncpy(str, prev_token.start + 1, prev_token.length - 2);
-            str[prev_token.length - 2] = 0;
 
             node* n = malloc(sizeof(node));
             n->type = NODE_RAW_DATA;
             n->as.raw_data.is_array = true;
             n->as.raw_data.is_ident = false;
             n->as.raw_data.length = prev_token.length - 2;
-            n->as.raw_data.as.array = (byte*)str;
+            n->as.raw_data.as.array = (byte*)copy_identifier(
+                prev_token.start + 1, prev_token.length - 2);
             return n;
         }
     }
 }
 
-static node* parse_abs_operand(node* n) {
-    if (check(TOK_LITERAL)) {
-        n->as.instr.arg_is_imm = false;
-        n->as.instr.arg_is_ident = false;
-        n->as.instr.arg_as.literal = parse_literal(false);
-    }
-    else if (match(TOK_IDENTIFIER)) {
-        n->as.instr.arg_is_imm = false;
-        n->as.instr.arg_is_ident = true;
-        char* str = malloc(prev_token.length + 1);
-        strncpy(str, prev_token.start, prev_token.length);
-        str[prev_token.length] = 0;
-        n->as.instr.arg_as.ident = str;
-    }
-    else {
-        error_at(&curr_token, "expected an operand");
-        return NULL;
-    }
-    return n;	
-}
+enum {
+    OP_NO_OP = 0,
+    OP_IMM = 1 << 0,
+    OP_IMP = 1 << 1,
+    OP_OPX = 1 << 2,
+    OP_OPY = 1 << 3,
+    OP_ABS = 1 << 4,
+};
 
-static node* parse_any_operand(node* n) {
-    if (check(TOK_IMMEDIATE_LITERAL)) {
-        n->as.instr.arg_is_imm = true;
-        n->as.instr.arg_is_ident = false;
-        n->as.instr.arg_as.literal = parse_literal(true);
-        return n;
+static void parse_operand(instr_node* i, unsigned ops) {
+    i->arg_type = curr_token.type;
+    printf("Line %d, ins %s, imp? %d, type %d\n", curr_token.line, string_of_ins(i->instr), (bool)(ops & OP_IMP), curr_token.type);
+
+    if (ops & OP_IMM && match(TOK_IMM_LITERAL)) {
+        i->as.imm_literal = prev_token.as.literal;
+        return;
     }
-    // handles the other two cases
-    return parse_abs_operand(n);
+    else if (ops & OP_IMM && match(TOK_IMM_IDENTIFIER)) {
+        i->as.ident = copy_identifier(
+            prev_token.start + 1,
+            prev_token.length - 1);
+        return;
+    }
+    else if (ops & OP_OPX && match(TOK_REGISTER_X)) return;
+    else if (ops & OP_OPY && match(TOK_REGISTER_Y)) return;
+    else if (ops & OP_ABS && match(TOK_ABS_LITERAL)) {
+        i->as.imm_literal = prev_token.as.literal;
+        return;
+    }
+    else if (ops & OP_ABS && match(TOK_ABS_IDENTIFIER)) {
+        i->as.ident = copy_identifier(
+            prev_token.start,
+            prev_token.length);
+        return;
+    }
+    else if (ops & OP_IMP || ops == OP_NO_OP) {
+        i->arg_type = 0;
+        printf("NO OP\n");
+        return;
+    }
+
+    else error_at(&curr_token, "expected an operand");
 }
 
 static node* parse_instruction() {
@@ -144,76 +142,76 @@ static node* parse_instruction() {
     n->type = NODE_INSTRUCTION;
     n->as.instr.instr = prev_token.as.ins;
 
-    switch (prev_token.as.ins) {
-        // with immediate or absolute operand
-        case INS_LDA:
-        case INS_LDX:
-        case INS_LDY:
-        case INS_AND:
-        case INS_IOR:
-        case INS_XOR:
-        case INS_SHL:
-        case INS_SHR:
-        case INS_ADD:
-        case INS_SUB:
-        case INS_MUL:
-        case INS_DIV:
-            n->as.instr.has_arg = true;
-            return parse_any_operand(n);
+#define Op(types) parse_operand(&n->as.instr, types); break
 
-        // with absolute operand
-        case INS_STA:
-        case INS_STX:
-        case INS_STY:
-        case INS_INC:
-        case INS_DEC:
-        case INS_JMP:
-        case INS_JIZ:
-        case INS_JNZ:
-        case INS_JIC:
-        case INS_JNC:
-        case INS_CLL: 
-            n->as.instr.has_arg = true;
-            return parse_abs_operand(n);
+    switch (prev_token.as.ins) {
         
-        // without operand
+        // load/store operations
+        case INS_LDA: Op(OP_IMM | OP_OPX | OP_OPY | OP_ABS);
+        case INS_LDX: Op(OP_IMM | OP_OPY | OP_ABS);
+        case INS_LDY: Op(OP_IMM | OP_OPX | OP_ABS);
+        case INS_STA: Op(OP_OPX | OP_OPY | OP_ABS);
+        case INS_STX: Op(OP_ABS);
+        case INS_STY: Op(OP_ABS);
+
+        // register operations
         case INS_TAX:
         case INS_TAY:
         case INS_TXA:
         case INS_TYA:
         case INS_SAX:
         case INS_SAY:
-        case INS_SXY:
+        case INS_SXY: Op(OP_NO_OP);
+
+        // stack operations
         case INS_TSX:
-        case INS_TXS:
-        case INS_PSH:
+        case INS_TXS: Op(OP_NO_OP);
+        case INS_PSH: Op(OP_IMM | OP_IMP | OP_OPX | OP_OPY);
         case INS_PLL:
-        case INS_POP:
-        case INS_INA:
-        case INS_DEA:
+        case INS_POP: Op(OP_NO_OP);
+
+        // bitwise operations
+        case INS_AND:
+        case INS_IOR:
+        case INS_XOR:
+        case INS_SHL:
+        case INS_SHR: Op(OP_IMM | OP_OPX | OP_ABS);
+
+        // numerical operations
+        case INS_ADD:
+        case INS_SUB:
+        case INS_MUL:
+        case INS_DIV: Op(OP_IMM | OP_OPX | OP_ABS);
+        case INS_INC:
+        case INS_DEC: Op(OP_IMP | OP_OPX | OP_OPY | OP_ABS);
+
+        // control flow operations
+        case INS_JMP:
+        case INS_JIZ:
+        case INS_JNZ:
+        case INS_JIC:
+        case INS_JNC:
+        case INS_CLL: Op(OP_ABS);
         case INS_RET:
-        case INS_HLT:
-            n->as.instr.has_arg = false;
-            n->as.instr.arg_is_imm = false;
-            n->as.instr.arg_is_ident = false;
-            return n;
+        case INS_HLT: Op(OP_NO_OP);
     }
+
+#undef Op
+
+    return n;
 }
 
 static node* parse_label() {
     node* n = malloc(sizeof(node));
     n->type = NODE_LABEL;
 
-    if (prev_token.type == TOK_IDENTIFIER) {
+    if (prev_token.type == TOK_ABS_IDENTIFIER) {
         n->as.label.is_ident = true;
-        char* str = malloc(prev_token.length + 1);
-        strncpy(str, prev_token.start, prev_token.length);
-        str[prev_token.length] = 0;
-        n->as.label.as.ident = str;
+        n->as.label.as.ident = copy_identifier(
+            prev_token.start, prev_token.length);
     } else {
         n->as.label.is_ident = false;
-        long l = strtoul(prev_token.start, NULL, 10);
-        n->as.label.as.literal = l;
+        n->as.label.as.literal = prev_token.as.literal;
     }
 
     consume(TOK_COLON, "a ':'");
@@ -227,7 +225,7 @@ static node* parse_node() {
     else if (match(TOK_INSTRUCTION))
         return parse_instruction();
 
-    else if (match(TOK_IDENTIFIER) || match(TOK_LITERAL))
+    else if (match(TOK_ABS_IDENTIFIER) || match(TOK_ABS_LITERAL))
         return parse_label();
 
     error_at(&curr_token, "unexpected token");

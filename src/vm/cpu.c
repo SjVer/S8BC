@@ -20,7 +20,7 @@ void log_status(cpu* cpu) {
     Log(
         "0x%04x: 0x%02x %s (%d %d %d)",
         cpu->pc, opcode, opcode_to_string(opcode),
-        opcode >> 7, opcode >> 3 & 0xff, opcode & 0b111
+        opcode >> 7, (opcode >> 4) & 0b111, opcode & 0xf
     );
 }
 
@@ -36,22 +36,23 @@ void reset_cpu(cpu* cpu) {
     cpu->flags.h = false;
 }
 
-void load_rom(cpu* cpu, byte* data, word size) {
-    Assert(size <= ROM_SIZE, "loaded ROM too large");
-    memcpy(cpu->memory + ROM_START, data, size);
+void load_rom(cpu* cpu, byte* data) {
+    memcpy(cpu->memory + ROM_START, data, ROM_SIZE);
 }
 
 void load_reset_vector(cpu* cpu) {
-    printf("%02x %02x\n", cpu->memory[MEMORY_SIZE - 2], cpu->memory[MEMORY_SIZE - 1]);
-    printf("%02x %02x\n", cpu->memory[RESET_VECTOR], cpu->memory[RESET_VECTOR + 1]);
     cpu->pc = cpu->memory[RESET_VECTOR]
             | cpu->memory[RESET_VECTOR + 1] << 8;
     
-    if (cli_args.debug)
+    if (cli_args.debug) {
         Log("loaded reset vector: $%04x", cpu->pc);
+        Log("first opcode: $%02x", cpu->memory[cpu->pc]);
+    }
 }
 
 void execute_instr(cpu* cpu) {
+    printf("%.*s\n", 10, cpu->memory);
+
     switch ((opcode)Fetch(cpu)) {
         case OP_NOP:
             break;

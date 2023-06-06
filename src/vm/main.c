@@ -70,28 +70,34 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
 #pragma endregion
 
+byte* read_rom_file() {
+    FILE* fp = fopen(cli_args.rom_file, "rb");
+    Assert(fp, "could not open ROM file: %s", cli_args.rom_file);
+    
+    fseek(fp, 0, SEEK_END);
+    word size = ftell(fp);
+    Assert(size <= ROM_SIZE, "loaded ROM too large");
+    rewind(fp);
+
+    byte* data = malloc(size);
+    fread(data, size, 1, fp);
+    return data;
+}
+
 int main(int argc, char** argv) {
     if (argp_parse(&argp, argc, argv, 0, 0, &cli_args))
         Abort(STATUS_CLI_ERROR);
     
-    // read ROM file
-    FILE* fp = fopen(cli_args.rom_file, "rb");
-    Assert(fp, "could not open ROM file: %s", cli_args.rom_file);
-    fseek(fp, 0, SEEK_END);
-    word size = ftell(fp);
-    rewind(fp);
-    byte* data = malloc(size);
-    fread(data, size, 1, fp);
-
-    // initialize and run the CPU
+    // initialize the CPU
     struct cpu cpu;
     reset_cpu(&cpu);
-    load_rom(&cpu, data, size);
 
-    // temporary
-    cpu.memory[RESET_VECTOR] = ROM_START & 0xff;
-    cpu.memory[RESET_VECTOR + 1] = ROM_START >> 8;
+    // read and load ROM
+    byte* rom = read_rom_file();
+    load_rom(&cpu, rom);
+    free(rom);
 
+    // run the CPU
     load_reset_vector(&cpu);
     execute(&cpu);
 

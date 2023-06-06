@@ -17,7 +17,7 @@ static void log_label_node(word a, label_node* n) {
     else Log("$%04x: ($%04x)", a, n->as.literal);
 }
 
-static const char* string_of_ins(instruction ins) {
+const char* string_of_ins(instruction ins) {
     switch (ins) {
         case INS_LDA: return "lda";
         case INS_LDX: return "ldx";
@@ -46,8 +46,6 @@ static const char* string_of_ins(instruction ins) {
         case INS_SUB: return "sub";
         case INS_MUL: return "mul";
         case INS_DIV: return "div";
-        case INS_INA: return "ina";
-        case INS_DEA: return "dea";
         case INS_INC: return "inc";
         case INS_DEC: return "dec";
         case INS_JMP: return "jmp";
@@ -58,26 +56,32 @@ static const char* string_of_ins(instruction ins) {
         case INS_CLL: return "cll";
         case INS_RET: return "ret";
         case INS_HLT: return "hlt";
+        
+        default: return "???";
     }
 } 
 
 static void log_instr_node(word a, instr_node* n) {
-    if (n->has_arg) {
-        if (n->arg_is_ident)
-            Log("$%04x: %s %s%s", a,
+    if (n->arg_type) {
+        if (n->arg_type == TOK_IMM_IDENTIFIER)
+            Log("$%04x: %s #%s", a,
                 string_of_ins(n->instr),
-                n->arg_is_imm ? "#" : "",
-                n->arg_as.ident
+                n->as.ident
             );
-        else if (n->arg_is_imm)
+        else if (n->arg_type == TOK_IMM_LITERAL)
             Log("$%04x: %s #$%02x", a,
                 string_of_ins(n->instr),
-                n->arg_as.literal
+                n->as.literal
             );
-        else
+        else if (n->arg_type == TOK_ABS_IDENTIFIER)
+            Log("$%04x: %s %s", a,
+                string_of_ins(n->instr),
+                n->as.ident
+            );
+        else if (n->arg_type == TOK_ABS_LITERAL)
             Log("$%04x: %s $%04x", a,
                 string_of_ins(n->instr),
-                n->arg_as.literal
+                n->as.literal
             );
     } else
         Log("$%04x: %s", a, string_of_ins(n->instr));

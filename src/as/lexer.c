@@ -16,14 +16,25 @@ static bool is_at_end() {
     return *current == 0;
 }
 
-static bool is_digit(char c) {
-    return c >= '0' && c <= '9';
+static bool is_digit(int base, char c) {
+    if (base == 2) return c == '0' || c == '1';
+    else if (base == 10) return c >= '0' && c <= '9';
+    else if (base == 16)
+        return (c >= '0' && c <= '9') ||
+               (c >= 'a' && c <= 'f') ||
+               (c >= 'A' && c <= 'F');
+    else
+        return false;
 }
 
 static bool is_alpha(char c) {
     return (c >= 'a' && c <= 'z') ||
            (c >= 'A' && c <= 'Z') ||
             c == '_';
+}
+
+static bool is_literal_start(char c) {
+    return c == '%' || c == '$' || is_digit(10, c);
 }
 
 static char advance() {
@@ -46,14 +57,13 @@ static token make_token(token_type type, token_as as) {
 }
 
 static token maybe_directive() {
-    while (is_alpha(peek()) || is_digit(peek())) advance();
+    while (is_alpha(peek()) || is_digit(10, peek())) advance();
     int length = current - start;
 
 #define Match(str, dir_)                                              \
     if (length == strlen("." str) && !strncmp(start, "." str, length)) \
         return make_token(TOK_DIRECTIVE, (token_as){.dir = dir_});    \
 
-    Match("reset",  DIR_RESET);
     Match("byte",   DIR_BYTE);
     Match("word",   DIR_WORD);
     Match("string", DIR_STRING);
@@ -65,7 +75,12 @@ static token maybe_directive() {
 }
 
 static token instruction_or_identifier() {
-    while (is_alpha(peek()) || is_digit(peek())) advance();
+    while (is_alpha(peek()) || is_digit(10, peek())) advance();
+
+    if (current - start == 1 && *start == 'x')
+        return make_token(TOK_REGISTER_X, (token_as){0});
+    if (current - start == 1 && *start == 'y')
+        return make_token(TOK_REGISTER_Y, (token_as){0});
 
     if (current - start == 3) {
 #define Match_instr(str, inst)                                       \
@@ -103,8 +118,6 @@ static token instruction_or_identifier() {
         Match_instr("sub", INS_SUB);
         Match_instr("mul", INS_MUL);
         Match_instr("div", INS_DIV);
-        Match_instr("ina", INS_INA);
-        Match_instr("dea", INS_DEA);
         Match_instr("inc", INS_INC);
         Match_instr("dec", INS_DEC);
 
@@ -120,7 +133,12 @@ static token instruction_or_identifier() {
 #undef Match_instr
     }
 
-    return make_token(TOK_IDENTIFIER, (token_as){0});
+    return make_token(TOK_ABS_IDENTIFIER, (token_as){0});
+}
+
+static token immediate_identifier() {
+    while (is_alpha(peek()) || is_digit(10, peek())) advance();
+    return make_token(TOK_IMM_IDENTIFIER, (token_as){0});
 }
 
 static token string() {
@@ -140,11 +158,24 @@ static token string() {
     return make_token(TOK_STRING, (token_as){0});
 }
 
-static token number(bool is_immediate) {
-    while (is_digit(peek())) advance();
+static token number(char first, bool is_immediate) {
+    int base = first == '%' ? 2 : first == '$' ? 16 : 10;
+    while (is_digit(base, peek())) advance();
 
-    token_type type = is_immediate ? TOK_IMMEDIATE_LITERAL : TOK_LITERAL;
-    return make_token(type, (token_as){0});
+    // parse the literal
+    int offset = (base != 10) + is_immediate; 
+    long l = strtoul(start + offset, NULL, base);
+
+    if (is_immediate && l > 0xff) {
+        Log_err("immediate literal too large");
+        Abort(STATUS_PARSE_ERROR);
+    } else if (l > 0xffff) {
+        Log_err("literal too large");
+        Abort(STATUS_PARSE_ERROR);
+    }
+
+    token_type type = is_immediate ? TOK_IMM_LITERAL : TOK_ABS_LITERAL;
+    return make_token(type, (token_as){.literal = l});
 }
 
 static void skip_whitespaces() {
@@ -190,13 +221,15 @@ token scan_next_token() {
     else if (is_alpha(c)) return instruction_or_identifier();
 
     // numbers
-    else if (is_digit(c)) return number(false);
+    else if (is_literal_start(c)) return number(c, false);
     else if (c == '#') {
-        if (!is_digit(advance())) {
-            Log_err("expected a number at line %d", line);
-            Abort(STATUS_SUCCESS);
-        }
-        return number(true);
+        char nc = advance();
+
+        if (is_literal_start(nc)) return number(nc, true);
+        else if (is_alpha(nc)) return immediate_identifier();
+
+        Log_err("expected a number or label after '#' at line %d", line);
+        Abort(STATUS_SUCCESS);
     }
 
     // strings
