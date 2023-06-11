@@ -104,36 +104,29 @@ enum {
 
 static void parse_operand(instr_node* i, unsigned ops) {
     i->arg_type = curr_token.type;
-    printf("Line %d, ins %s, imp? %d, type %d\n", curr_token.line, string_of_ins(i->instr), (bool)(ops & OP_IMP), curr_token.type);
 
-    if (ops & OP_IMM && match(TOK_IMM_LITERAL)) {
+    if (ops & OP_IMM && match(TOK_IMM_LITERAL))
         i->as.imm_literal = prev_token.as.literal;
-        return;
-    }
-    else if (ops & OP_IMM && match(TOK_IMM_IDENTIFIER)) {
+
+    else if (ops & OP_IMM && match(TOK_IMM_IDENTIFIER))
         i->as.ident = copy_identifier(
             prev_token.start + 1,
             prev_token.length - 1);
-        return;
-    }
+
     else if (ops & OP_OPX && match(TOK_REGISTER_X)) return;
     else if (ops & OP_OPY && match(TOK_REGISTER_Y)) return;
-    else if (ops & OP_ABS && match(TOK_ABS_LITERAL)) {
+
+    else if (ops & OP_ABS && match(TOK_ABS_LITERAL))
         i->as.imm_literal = prev_token.as.literal;
-        return;
-    }
-    else if (ops & OP_ABS && match(TOK_ABS_IDENTIFIER)) {
+
+    else if (ops & OP_ABS && match(TOK_ABS_IDENTIFIER))
         i->as.ident = copy_identifier(
             prev_token.start,
             prev_token.length);
-        return;
-    }
-    else if (ops & OP_IMP || ops == OP_NO_OP) {
+            
+    else if (ops & OP_IMP || ops == OP_NO_OP)
         i->arg_type = 0;
-        printf("NO OP\n");
-        return;
-    }
-
+    
     else error_at(&curr_token, "expected an operand");
 }
 
@@ -150,9 +143,11 @@ static node* parse_instruction() {
         case INS_LDA: Op(OP_IMM | OP_OPX | OP_OPY | OP_ABS);
         case INS_LDX: Op(OP_IMM | OP_OPY | OP_ABS);
         case INS_LDY: Op(OP_IMM | OP_OPX | OP_ABS);
+        case INS_LDI: Op(OP_ABS);
         case INS_STA: Op(OP_OPX | OP_OPY | OP_ABS);
-        case INS_STX: Op(OP_ABS);
-        case INS_STY: Op(OP_ABS);
+        case INS_STX:
+        case INS_STY:
+        case INS_STI: Op(OP_ABS);
 
         // register operations
         case INS_TAX:
@@ -241,6 +236,9 @@ node* parse() {
     
     while (!check(TOK_EOF)) {
         node* next_node = parse_node();
+
+        // invalid node
+        if (!next_node) continue;
 
         if (prev_node) prev_node->next = next_node;
         else first_node = next_node;

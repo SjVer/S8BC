@@ -25,9 +25,11 @@ typedef enum {
     INS_LDA,
     INS_LDX,
     INS_LDY,
+    INS_LDI,
     INS_STA,
     INS_STX,
     INS_STY,
+    INS_STI,
 
     INS_TAX,
     INS_TAY,

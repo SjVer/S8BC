@@ -13,11 +13,13 @@ char* opcode_to_string(opcode opcode) {
         case OP_LDY_IMM: return "ldy imm";
         case OP_LDY_OPX: return "ldy opx";
         case OP_LDY_ABS: return "ldy abs";
+        case OP_LDI_ABS: return "ldi abs";
         case OP_STA_OPX: return "sta opx";
         case OP_STA_OPY: return "sta opy";
         case OP_STA_ABS: return "sta abs";
         case OP_STX_ABS: return "stx abs";
         case OP_STY_ABS: return "sty abs";
+        case OP_STI_ABS: return "sti abs";
         case OP_TAX:     return "tax";
         case OP_TAY:     return "tay";
         case OP_TXA:     return "txa";

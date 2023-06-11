@@ -39,12 +39,15 @@ typedef enum opcode {
     OP_LDY_OPX,
     OP_LDY_ABS,
 
+    OP_LDI_ABS, // load byte at address at OP into A
+
     OP_STA_OPX, // store A at OP
     OP_STA_OPY,
     OP_STA_ABS,
 
     OP_STX_ABS, // store X at OP
     OP_STY_ABS, // store Y at OP
+    OP_STI_ABS, // store A at address at OP
 
     // register operations
 
@@ -61,7 +64,7 @@ typedef enum opcode {
     OP_TSX,     // transfer SP to X
     OP_TXS,     // transfer X to SP
 
-    OP_PSH_IMM, // push A on stack
+    OP_PSH_IMM, // push OP on stack
     OP_PSH_IMP,
     OP_PSH_OPX,
     OP_PSH_OPY,

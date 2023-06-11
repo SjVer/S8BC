@@ -9,6 +9,8 @@ typedef uint16_t word;
 
 #define ENDIANNESS "little"
 
+#define CYCLE_DELAY 2500
+
 #define MEMORY_SIZE (0xffff + 1)
 
 #define RESET_VECTOR 0xfffe
@@ -16,29 +18,34 @@ typedef uint16_t word;
 /*
   memory map:
 
-    0x0000 ┌─────────┐ RAM
-           │ zero    │
-    0x00ff │ page    │
-    0x0100 ├─────────┤
-           │ stack   │
-    0x01ff │         │
-    0x0200 ├─────────┤
-           │ i/o     │
-    0x02ff │         │
-    0x0300 ├─────────┤
-           │ unused  │
-           │         │
-           .         .
-           │         │
-    0x7fff │         │
-    0x8000 ├─────────┤ ROM
-           │         │
-           .         .
-           .         .
-           .         .
-    0xfffe │(reset   │
-    0xffff │ vector) │
-           └─────────┘
+    $0000 ┌─────────┐ RAM
+          │ zero    │
+    $00ff │ page    │
+    $0100 ├─────────┤
+          │ stack   │
+    $01ff │         │
+    $0200 ├─────────┤
+          │ i/o     │
+    $02ff │         │
+    $0300 ├─────────┤
+          │ text    │
+          │ output  │
+    $04ff │         │
+    $0500 ├─────────┤
+          │ unused  │
+          │         │
+          .         .
+          .         .
+          │         │
+    $7fff │         │
+    $8000 ├─────────┤ ROM
+          │         │
+          .         .
+          .         .
+          .         .
+    $fffe │(reset   │
+    $ffff │ vector) │
+          └─────────┘
 */
 
 // 16kb (16384 bytes)
@@ -56,6 +63,12 @@ typedef uint16_t word;
 // 255 bytes
 #define IO_START 0x0200
 #define IO_END 0x02ff // incl.
+
+// 1024 bytes
+#define TEXT_START 0x0300
+#define TEXT_END 0x04ff // incl.
+#define TEXT_WIDTH 32
+#define TEXT_HEIGHT 16
 
 // 32kb (32768 bytes)
 #define ROM_START 0x8000

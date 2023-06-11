@@ -29,9 +29,6 @@ N = \033[0m$$(tput sgr0)
 
 # ===================== targets =====================
 
-.MAIN: all
-all: $(PRODUCTS)
-
 define make-target
 $1-SRCDIR = $(SRCDIR)/$1
 $1-INCDIR = $(INCDIR)/$1

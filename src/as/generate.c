@@ -1,6 +1,7 @@
 #include <memory.h>
 #include "as/generate.h"
 #include "as/common.h"
+#include "as/debug.h"
 #include "instructions.h"
 
 byte data[ROM_SIZE];
@@ -27,41 +28,49 @@ static void gen_instr_with_operands(word a, instr_node* i,
 	opcode imm, opcode imp_or_none, opcode opx, opcode opy, opcode abs) {
 	// assume the parser only generates correct nodes
 
-	switch (i->arg_type) {
-		case 0:
-			*Rel(a) = imp_or_none;
-			break;
+#define Assert_opcode(o) \
+	Assert(o, "invalid opcode written at $%04x (%s)", a, string_of_ins(i->instr));
 
+	switch (i->arg_type) {
 		case TOK_IMM_LITERAL:
+			Assert_opcode(imm);
 			*Rel(a) = imm;
 			*Rel(a + 1) = i->as.imm_literal;
 			break;
 
+		case 0:
+			Assert_opcode(imp_or_none);
+			*Rel(a) = imp_or_none;
+			break;
+
 		case TOK_REGISTER_X:
+			Assert_opcode(opx)
 			*Rel(a) = opx;
 			break;
 
 		case TOK_REGISTER_Y:
+			Assert_opcode(opy);
 			*Rel(a) = opy;
 			break;
 
 		case TOK_ABS_LITERAL:
+			Assert_opcode(abs);
 			*Rel(a) = abs;
 			*Rel(a + 1) = i->as.literal & 0xff;
 			*Rel(a + 2) = i->as.literal >> 8;
 			break;
 
 		default:
-			printf("$%04x %d\n", a, i->arg_type);
 			Log_err("invalid parser output");
 			Abort(STATUS_INTERNAL_ERROR);
 	}
+
+#undef Assert_opcode
 }
 
 static void gen_instruction(word a, instr_node* i) {
-	if (i->arg_type)
-		Assert(i->arg_type != TOK_IMM_IDENTIFIER
-			&& i->arg_type != TOK_ABS_IDENTIFIER, "unresolved label");
+	Assert(i->arg_type != TOK_IMM_IDENTIFIER
+		&& i->arg_type != TOK_ABS_IDENTIFIER, "unresolved label");
 
 #define Op(...)	gen_instr_with_operands(a, i, __VA_ARGS__); break
 
@@ -70,9 +79,11 @@ static void gen_instruction(word a, instr_node* i) {
 		case INS_LDA: Op(OP_LDA_IMM, 0, OP_LDA_OPX, OP_LDA_OPY, OP_LDA_ABS);
 		case INS_LDX: Op(OP_LDX_IMM, 0, 0, OP_LDX_OPY, OP_LDX_ABS);
 		case INS_LDY: Op(OP_LDY_IMM, 0, OP_LDY_OPX, 0, OP_LDY_ABS);
-		case INS_STA: Op(0, 0, OP_LDA_OPX, OP_LDA_OPY, OP_LDA_ABS);
+		case INS_LDI: Op(0, 0, 0, 0, OP_STX_ABS);
+		case INS_STA: Op(0, 0, OP_STA_OPX, OP_STA_OPY, OP_STA_ABS);
 		case INS_STX: Op(0, 0, 0, 0, OP_STX_ABS);
 		case INS_STY: Op(0, 0, 0, 0, OP_STY_ABS);
+		case INS_STI: Op(0, 0, 0, 0, OP_STI_ABS);
 
 		// register operations
 		case INS_TAX: Op(0, OP_TAX, 0, 0, 0);
@@ -102,16 +113,16 @@ static void gen_instruction(word a, instr_node* i) {
 		case INS_SUB: Op(OP_SUB_IMM, 0, OP_SUB_OPX, 0, OP_SUB_ABS);
 		case INS_MUL: Op(OP_MUL_IMM, 0, OP_MUL_OPX, 0, OP_MUL_ABS);
 		case INS_DIV: Op(OP_DIV_IMM, 0, OP_DIV_OPX, 0, OP_DIV_ABS);
-		case INS_INC: Op(OP_LDA_IMM, 0, OP_LDA_OPX, OP_LDA_OPY, OP_LDA_ABS);
-		case INS_DEC: Op(OP_LDA_IMM, 0, OP_LDA_OPX, OP_LDA_OPY, OP_LDA_ABS);
+		case INS_INC: Op(0, OP_INC_IMP, OP_INC_OPX, OP_INC_OPY, OP_INC_ABS);
+		case INS_DEC: Op(0, OP_DEC_IMP, OP_DEC_OPX, OP_DEC_OPY, OP_DEC_ABS);
 
 		// control flow operations
-		case INS_JMP: Op(0, OP_JMP, 0, 0, 0);
-		case INS_JIZ: Op(0, OP_JIZ, 0, 0, 0);
-		case INS_JNZ: Op(0, OP_JNZ, 0, 0, 0);
-		case INS_JIC: Op(0, OP_JIC, 0, 0, 0);
-		case INS_JNC: Op(0, OP_JNC, 0, 0, 0);
-		case INS_CLL: Op(0, OP_CLL, 0, 0, 0);
+		case INS_JMP: Op(0, 0, 0, 0, OP_JMP);
+		case INS_JIZ: Op(0, 0, 0, 0, OP_JIZ);
+		case INS_JNZ: Op(0, 0, 0, 0, OP_JNZ);
+		case INS_JIC: Op(0, 0, 0, 0, OP_JIC);
+		case INS_JNC: Op(0, 0, 0, 0, OP_JNC);
+		case INS_CLL: Op(0, 0, 0, 0, OP_CLL);
 		case INS_RET: Op(0, OP_RET, 0, 0, 0);
 		case INS_HLT: Op(0, OP_HLT, 0, 0, 0);
 	}

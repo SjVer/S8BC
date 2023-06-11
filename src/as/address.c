@@ -108,7 +108,8 @@ static void solve_node_address(node* n) {
             word addr = find_label(i->as.ident);
             free(i->as.ident);
             i->arg_type = TOK_IMM_LITERAL;
-            i->as.imm_literal = addr & 0xff;
+            // i->as.imm_literal = (byte)(addr & 0xff);
+            i->as.imm_literal = (byte)(addr & 0xff);
         }
         else if (i->arg_type == TOK_ABS_LITERAL) incr_curr_addr(2);
         else if (i->arg_type == TOK_ABS_IDENTIFIER) {

@@ -25,6 +25,7 @@ const char* string_of_ins(instruction ins) {
         case INS_STA: return "sta";
         case INS_STX: return "stx";
         case INS_STY: return "sty";
+        case INS_STI: return "sti";
         case INS_TAX: return "tax";
         case INS_TAY: return "tay";
         case INS_TXA: return "txa";
@@ -63,7 +64,11 @@ const char* string_of_ins(instruction ins) {
 
 static void log_instr_node(word a, instr_node* n) {
     if (n->arg_type) {
-        if (n->arg_type == TOK_IMM_IDENTIFIER)
+        if (n->arg_type == TOK_REGISTER_X)
+            Log("$%04x: %s x", a, string_of_ins(n->instr));
+        else if (n->arg_type == TOK_REGISTER_Y)
+            Log("$%04x: %s y", a, string_of_ins(n->instr));
+        else if (n->arg_type == TOK_IMM_IDENTIFIER)
             Log("$%04x: %s #%s", a,
                 string_of_ins(n->instr),
                 n->as.ident
@@ -71,7 +76,7 @@ static void log_instr_node(word a, instr_node* n) {
         else if (n->arg_type == TOK_IMM_LITERAL)
             Log("$%04x: %s #$%02x", a,
                 string_of_ins(n->instr),
-                n->as.literal
+                n->as.imm_literal
             );
         else if (n->arg_type == TOK_ABS_IDENTIFIER)
             Log("$%04x: %s %s", a,
@@ -83,6 +88,10 @@ static void log_instr_node(word a, instr_node* n) {
                 string_of_ins(n->instr),
                 n->as.literal
             );
+        else {
+            Log_err("cannot log invalid operand (%d)\n", n->arg_type);
+            Abort(STATUS_INTERNAL_ERROR);
+        }
     } else
         Log("$%04x: %s", a, string_of_ins(n->instr));
 }

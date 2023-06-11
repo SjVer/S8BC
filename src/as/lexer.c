@@ -93,6 +93,7 @@ static token instruction_or_identifier() {
         Match_instr("sta", INS_STA);
         Match_instr("stx", INS_STX);
         Match_instr("sty", INS_STY);
+        Match_instr("sti", INS_STI);
 
         Match_instr("tax", INS_TAX);
         Match_instr("tay", INS_TAY);
