@@ -32,6 +32,18 @@ static void add_labels_in_node(node* n) {
     if (n->type == NODE_RAW_DATA) {
         incr_curr_addr(n->as.raw_data.length);
     }
+    else if (n->type == NODE_ALIAS) {
+        // add the alias 
+        struct label* l = malloc(sizeof(struct label));
+        l->ident = n->as.alias.ident;
+        l->address = n->as.alias.address;
+        l->next = labels;
+        labels = l;
+
+        if (cli_args.verbose)
+            Log("added alias \"%s\" for $%04x",
+                l->ident, l->address);
+    }
     else if (n->type == NODE_LABEL) {
         if (n->as.label.is_ident) {
             // add the label
@@ -43,7 +55,7 @@ static void add_labels_in_node(node* n) {
 
             if (cli_args.verbose)
                 Log("added label \"%s\" at $%04x",
-                    n->as.label.as.ident, curr_address);
+                    l->ident, l->address);
         } else {
             // set the current address
             set_curr_addr(n->as.label.as.literal);
@@ -118,7 +130,7 @@ static void solve_node_address(node* n) {
             word addr = find_label(i->as.ident);
             free(i->as.ident);
             i->arg_type = TOK_ABS_LITERAL;
-            i->as.literal = addr;
+            i->as.abs_literal = addr;
         }
     }
 }

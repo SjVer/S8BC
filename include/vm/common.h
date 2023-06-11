@@ -30,5 +30,6 @@
 extern struct cli_args {
     bool verbose;
     char* rom_file;
+    bool slow;
     bool debug;
 } cli_args;

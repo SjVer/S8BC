@@ -6,6 +6,7 @@
 
 typedef enum {
 	NODE_RAW_DATA,
+	NODE_ALIAS,
 	NODE_LABEL,
 	NODE_INSTRUCTION,
 } node_type;
@@ -23,6 +24,11 @@ typedef struct {
 } raw_data_node;
 
 typedef struct {
+	char* ident;
+	word address;
+} alias_node;
+
+typedef struct {
 	bool is_ident;
 	union {
 		word literal;
@@ -36,7 +42,7 @@ typedef struct {
 	union {
 		char* ident;
 		byte imm_literal;
-		word literal;
+		word abs_literal;
 	} as;
 } instr_node;
 
@@ -45,6 +51,7 @@ typedef struct node {
 	node_type type;
 	union {
 		raw_data_node raw_data;
+		alias_node alias;
 		label_node label;
 		instr_node instr;
 	} as;

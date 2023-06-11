@@ -4,6 +4,7 @@
 
 #include "instructions.h"
 #include "vm/cpu.h"
+#include "vm/gui.h"
 
 #define Addr_x(cpu) (((cpu)->pc & 0xff00) | (cpu)->x)
 #define Addr_y(cpu) (((cpu)->pc & 0xff00) | (cpu)->y)
@@ -35,23 +36,6 @@ void log_status(cpu* cpu) {
     );
 }
 
-void display_text_output(cpu* cpu) {
-    printf("\e[1;1H");
-
-    printf("┌");
-    for (int i = 0; i < TEXT_WIDTH; i++) printf("─");
-    printf("┐\n");
-
-    for (int y = 0; y < TEXT_HEIGHT; y++) {
-        int offset = TEXT_START + y * TEXT_WIDTH;
-        printf("│%-*.*s│\n", TEXT_WIDTH, TEXT_WIDTH, cpu->memory + offset);
-    }
-
-    printf("└");
-    for (int i = 0; i < TEXT_WIDTH; i++) printf("─");
-    printf("┘\n");
-}
-
 void reset_cpu(cpu* cpu) {
     memset(cpu->memory, 0, MEMORY_SIZE);
     cpu->a = 0;
@@ -62,6 +46,7 @@ void reset_cpu(cpu* cpu) {
     cpu->flags.z = false;
     cpu->flags.c = false;
     cpu->flags.h = false;
+    cpu->flags.i = false;
 }
 
 void load_rom(cpu* cpu, byte* data) {
@@ -72,18 +57,59 @@ void load_reset_vector(cpu* cpu) {
     cpu->pc = cpu->memory[RESET_VECTOR]
             | cpu->memory[RESET_VECTOR + 1] << 8;
     
-    if (cli_args.debug) {
+    if (cli_args.verbose)
         Log("loaded reset vector: $%04x", cpu->pc);
-        Log("first opcode: $%02x", cpu->memory[cpu->pc]);
-    }
 }
 
-void set_flags_by_result(cpu* cpu, unsigned result) {
+static void set_flags_by_result(cpu* cpu, unsigned result) {
     cpu->flags.c = result > 0xff;
     cpu->flags.z = result == 0;
 }
 
-void execute_instr(cpu* cpu) {
+static void push_to_stack(cpu* cpu, byte value) {
+    cpu->memory[STACK_START | --cpu->sp] = value;
+}
+
+static byte pop_from_stack(cpu* cpu) {
+    return cpu->memory[STACK_START | cpu->sp++];
+}
+
+static void push_pc_to_stack(cpu* cpu) {
+    push_to_stack(cpu, cpu->pc >> 8);
+    push_to_stack(cpu, cpu->pc & 0xff);
+}
+
+void run_reset_interrupt(cpu* cpu) {
+    if (cpu->flags.i) return;
+
+    reset_cpu(cpu);
+    load_reset_vector(cpu);
+
+    if (cli_args.verbose)
+        Log("reset interrupt, jumping to $%04x", cpu->pc);
+}
+
+void run_input_interrupt(cpu* cpu, int key, bool pressed) {
+    if (cpu->flags.i) return;
+
+    if (cli_args.debug) {
+        putchar('\n');
+        if (pressed) Log("key %d pressed ($%04x)", key, IO_START | key);
+        else Log("key %d unpressed ($%04x)", key, IO_START | key);
+    }
+
+    push_pc_to_stack(cpu);
+    push_to_stack(cpu, cpu->status);
+    cpu->pc = cpu->memory[INPUT_VECTOR]
+            | cpu->memory[INPUT_VECTOR + 1] << 8;
+    cpu->memory[IO_KEYCODE] = key;
+    cpu->memory[IO_STATUS] = pressed & 0b00000001;
+
+    if (cli_args.verbose)
+        Log("input interrupt, jumping to $%04x", cpu->pc);
+}
+
+static void execute_instr(cpu* cpu) {
 
 #define Binop_on_a(op, rhs) { \
         unsigned result = cpu->a op rhs; \
@@ -218,23 +244,30 @@ void execute_instr(cpu* cpu) {
             break;
 
         case OP_PSH_IMM:
-            cpu->memory[STACK_START | --cpu->sp] = Fetch(cpu);
+            push_to_stack(cpu, Fetch(cpu));
             break;
         case OP_PSH_IMP:
-            cpu->memory[STACK_START | --cpu->sp] = cpu->a;
+            push_to_stack(cpu, cpu->a);
             break;
         case OP_PSH_OPX:
-            cpu->memory[STACK_START | --cpu->sp] = cpu->x;
+            push_to_stack(cpu, cpu->x);
             break;
         case OP_PSH_OPY:
-            cpu->memory[STACK_START | --cpu->sp] = cpu->y;
+            push_to_stack(cpu, cpu->y);
             break;
 
         case OP_PLL:
             cpu->a = cpu->memory[STACK_START | cpu->sp];
             break;
-        case OP_POP:
-            cpu->a = cpu->memory[STACK_START | cpu->sp++];
+
+        case OP_POP_IMP:
+            cpu->a = pop_from_stack(cpu);
+            break;
+        case OP_POP_OPX:
+            cpu->x = pop_from_stack(cpu);
+            break;
+        case OP_POP_OPY:
+            cpu->y = pop_from_stack(cpu);
             break;
 
         // bitwise operations
@@ -288,6 +321,21 @@ void execute_instr(cpu* cpu) {
         case OP_SHR_ABS:
             Binop_on_a(>>, Byte_at_fetch(cpu));
             break;
+
+        case OP_NOT_IMP:
+            set_flags_by_result(cpu, cpu->a = ~cpu->a);
+            break;
+        case OP_NOT_OPX:
+            set_flags_by_result(cpu, cpu->x = ~cpu->x);
+            break;
+        case OP_NOT_OPY:
+            set_flags_by_result(cpu, cpu->y = ~cpu->y);
+            break;
+        case OP_NOT_ABS: {
+            byte* op = cpu->memory + Fetch_word(cpu);
+            set_flags_by_result(cpu, *op = ~(*op));
+            break;
+        }
 
         // numerical operations
 
@@ -379,13 +427,17 @@ void execute_instr(cpu* cpu) {
             else cpu->pc += 2;
             break;
         case OP_CLL:
+            push_pc_to_stack(cpu);
             cpu->pc = Fetch_word(cpu);
-            cpu->memory[STACK_START | --cpu->sp] = cpu->pc >> 8;
-            cpu->memory[STACK_START | --cpu->sp] = cpu->pc & 0xff;
             break;
         case OP_RET:
-            cpu->pc = cpu->memory[STACK_START | cpu->sp++];
-            cpu->pc |= cpu->memory[STACK_START | cpu->sp++] << 8;
+            cpu->pc = pop_from_stack(cpu);
+            cpu->pc |= pop_from_stack(cpu) << 8;
+            break;
+        case OP_RTI:
+            cpu->status = pop_from_stack(cpu);
+            cpu->pc = pop_from_stack(cpu);
+            cpu->pc |= pop_from_stack(cpu) << 8;
             break;
         case OP_HLT:
             cpu->flags.h = true;
@@ -396,20 +448,19 @@ void execute_instr(cpu* cpu) {
 }
 
 void execute(cpu* cpu) {
-    printf("\e[2J");
-
     while (!cpu->flags.h) {
         if (cli_args.debug) {
             printf("\n");
             log_status(cpu);
-            usleep(1e6 - CYCLE_DELAY);
         }
+        if (cli_args.slow)
+            usleep(1e6 - CYCLE_DELAY);
 
         execute_instr(cpu);
-        display_text_output(cpu);
+        draw_gui(cpu);
 
         usleep(CYCLE_DELAY);
     }
 
-    for (;;) {}
+    if (cli_args.verbose) Log("execution halted");
 }

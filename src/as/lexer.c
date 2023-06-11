@@ -87,6 +87,8 @@ static token instruction_or_identifier() {
     if (!strncmp(start, str, 3))                                     \
         return make_token(TOK_INSTRUCTION, (token_as){.ins = inst}); 
 
+        Match_instr("nop", INS_NOP);
+        
         Match_instr("lda", INS_LDA);
         Match_instr("ldx", INS_LDX);
         Match_instr("ldy", INS_LDY);
@@ -114,6 +116,7 @@ static token instruction_or_identifier() {
         Match_instr("xor", INS_XOR);
         Match_instr("shl", INS_SHL);
         Match_instr("shr", INS_SHR);
+        Match_instr("not", INS_NOT);
 
         Match_instr("add", INS_ADD);
         Match_instr("sub", INS_SUB);
@@ -129,6 +132,7 @@ static token instruction_or_identifier() {
         Match_instr("jnc", INS_JNC);
         Match_instr("cll", INS_CLL);
         Match_instr("ret", INS_RET);
+        Match_instr("rti", INS_RTI);
         Match_instr("hlt", INS_HLT);
     
 #undef Match_instr
@@ -237,8 +241,8 @@ token scan_next_token() {
     else if (c == '"') return string();
 
     // colon
-    else if (c == ':')
-        return make_token(TOK_COLON, (token_as){0});
+    else if (c == ':') return make_token(TOK_COLON, (token_as){0});
+    else if (c == '=') return make_token(TOK_EQUAL, (token_as){0});
 
     Log_err("unexpected character at line %d: '%c'", line, c);
     Abort(STATUS_PARSE_ERROR);

@@ -3,6 +3,7 @@
 
 typedef enum {
     TOK_COLON,
+    TOK_EQUAL,
     TOK_DIRECTIVE,
     TOK_INSTRUCTION,
     TOK_REGISTER_X,
@@ -22,6 +23,8 @@ typedef enum {
 } directive;
 
 typedef enum {
+    INS_NOP,
+    
     INS_LDA,
     INS_LDX,
     INS_LDY,
@@ -50,6 +53,7 @@ typedef enum {
     INS_XOR,
     INS_SHL,
     INS_SHR,
+    INS_NOT,
 
     INS_ADD,
     INS_SUB,
@@ -65,6 +69,7 @@ typedef enum {
     INS_JNC,
     INS_CLL,
     INS_RET,
+    INS_RTI,
     INS_HLT,
 } instruction;
 

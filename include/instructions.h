@@ -70,7 +70,10 @@ typedef enum opcode {
     OP_PSH_OPY,
     
     OP_PLL,	    // pull stack to A
-    OP_POP,     // pop stack to A
+
+    OP_POP_IMP, // pop stack to OP
+    OP_POP_OPX,
+    OP_POP_OPY,
 
     // bitwise operations
 
@@ -93,6 +96,11 @@ typedef enum opcode {
     OP_SHR_IMM, // A >> OP -> A
     OP_SHR_OPX,
     OP_SHR_ABS,
+
+    OP_NOT_IMP, // bitwise negate OP
+    OP_NOT_OPX,
+    OP_NOT_OPY,
+    OP_NOT_ABS,
 
     // numerical operations
 
@@ -131,6 +139,7 @@ typedef enum opcode {
     OP_JNC,     // jump to OP if carry flag not set
     OP_CLL,     // call a subroutine at OP
     OP_RET,     // return from a subroutine
+    OP_RTI,     // return from an interrupt
     OP_HLT,     // halt execution
 
 } opcode;

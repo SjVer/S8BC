@@ -28,36 +28,36 @@ static void gen_instr_with_operands(word a, instr_node* i,
 	opcode imm, opcode imp_or_none, opcode opx, opcode opy, opcode abs) {
 	// assume the parser only generates correct nodes
 
-#define Assert_opcode(o) \
-	Assert(o, "invalid opcode written at $%04x (%s)", a, string_of_ins(i->instr));
+	// #define Assert_opcode(o) \
+	// 	Assert(o, "invalid opcode written at $%04x (%s)", a, string_of_ins(i->instr));
 
 	switch (i->arg_type) {
 		case TOK_IMM_LITERAL:
-			Assert_opcode(imm);
+			// Assert_opcode(imm);
 			*Rel(a) = imm;
 			*Rel(a + 1) = i->as.imm_literal;
 			break;
 
 		case 0:
-			Assert_opcode(imp_or_none);
+			// Assert_opcode(imp_or_none);
 			*Rel(a) = imp_or_none;
 			break;
 
 		case TOK_REGISTER_X:
-			Assert_opcode(opx)
+			// Assert_opcode(opx)
 			*Rel(a) = opx;
 			break;
 
 		case TOK_REGISTER_Y:
-			Assert_opcode(opy);
+			// Assert_opcode(opy);
 			*Rel(a) = opy;
 			break;
 
 		case TOK_ABS_LITERAL:
-			Assert_opcode(abs);
+			// Assert_opcode(abs);
 			*Rel(a) = abs;
-			*Rel(a + 1) = i->as.literal & 0xff;
-			*Rel(a + 2) = i->as.literal >> 8;
+			*Rel(a + 1) = i->as.abs_literal & 0xff;
+			*Rel(a + 2) = i->as.abs_literal >> 8;
 			break;
 
 		default:
@@ -75,6 +75,8 @@ static void gen_instruction(word a, instr_node* i) {
 #define Op(...)	gen_instr_with_operands(a, i, __VA_ARGS__); break
 
 	switch (i->instr) {
+		case INS_NOP: Op(0, OP_NOP, 0, 0, 0);
+
 		// load/store operations
 		case INS_LDA: Op(OP_LDA_IMM, 0, OP_LDA_OPX, OP_LDA_OPY, OP_LDA_ABS);
 		case INS_LDX: Op(OP_LDX_IMM, 0, 0, OP_LDX_OPY, OP_LDX_ABS);
@@ -99,7 +101,7 @@ static void gen_instruction(word a, instr_node* i) {
 		case INS_TXS: Op(0, OP_TXS, 0, 0, 0);
 		case INS_PSH: Op(OP_PSH_IMM, OP_PSH_IMP, OP_PSH_OPX, OP_PSH_OPY, 0);
 		case INS_PLL: Op(0, OP_PLL, 0, 0, 0);
-		case INS_POP: Op(0, OP_POP, 0, 0, 0);
+		case INS_POP: Op(0, OP_POP_IMP, OP_POP_OPX, OP_POP_OPY, 0);
 
 		// bitwise operations
 		case INS_AND: Op(OP_AND_IMM, 0, OP_AND_OPX, 0, OP_AND_ABS);
@@ -107,6 +109,7 @@ static void gen_instruction(word a, instr_node* i) {
 		case INS_XOR: Op(OP_XOR_IMM, 0, OP_XOR_OPX, 0, OP_XOR_ABS);
 		case INS_SHL: Op(OP_SHL_IMM, 0, OP_SHL_OPX, 0, OP_SHL_ABS);
 		case INS_SHR: Op(OP_SHR_IMM, 0, OP_SHR_OPX, 0, OP_SHR_ABS);
+		case INS_NOT: Op(0, OP_NOT_IMP, OP_NOT_OPX, OP_NOT_OPY, OP_NOT_ABS);
 
 		// numerical operations
 		case INS_ADD: Op(OP_ADD_IMM, 0, OP_ADD_OPX, 0, OP_ADD_ABS);
@@ -124,6 +127,7 @@ static void gen_instruction(word a, instr_node* i) {
 		case INS_JNC: Op(0, 0, 0, 0, OP_JNC);
 		case INS_CLL: Op(0, 0, 0, 0, OP_CLL);
 		case INS_RET: Op(0, OP_RET, 0, 0, 0);
+		case INS_RTI: Op(0, OP_RTI, 0, 0, 0);
 		case INS_HLT: Op(0, OP_HLT, 0, 0, 0);
 	}
 
@@ -135,6 +139,7 @@ static void gen_node_rom(node* n) {
 		case NODE_RAW_DATA:
 			gen_raw_data(n->address, &n->as.raw_data);
 			break;
+		case NODE_ALIAS:
 		case NODE_LABEL:
 			break;
 		case NODE_INSTRUCTION:

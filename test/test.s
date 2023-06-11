@@ -1,30 +1,31 @@
-start:
-  ldx #message ; char ptr
+STATUS_CHAR = $0300
+KEYCODE_CHAR = $031f
+KEYCODE_ADDR = $0202
 
-  ; store the buff ptr at $00
-  lda #$00
-  sta $00
-  lda #$03
-  sta $01
+reset:
+  lda #$5f ; '_'
+  ldx #$20 ; ' '
+  sta STATUS_CHAR
+  sta KEYCODE_CHAR
 
 loop:
-  lda x ; load the next char
-  jiz end ; end if char is 0
-
-  sti $00 ; write the char
-  inc x ; incr the char ptr
-  inc $00 ; incr the buff ptr
-
+  ; sta STATUS_CHAR
+  ; sax
   jmp loop
 
-end:
-  hlt
+input:
+  rti
+  ; save reg
+  psh
 
+  ; print the keycode
+  lda KEYCODE_ADDR
+  add #86 ; keycode to ascii
+  sta KEYCODE_CHAR
 
-message:
-  .string "Hello, World!"
-  .byte #0
+  ; restore reg and return
+  pop
+  rti
 
-; reset vector
-$fffe:
-  .word #start
+$fffc: .word #input
+$fffe: .word #reset

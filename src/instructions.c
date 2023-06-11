@@ -34,7 +34,9 @@ char* opcode_to_string(opcode opcode) {
         case OP_PSH_OPX: return "psh opx";
         case OP_PSH_OPY: return "psh opy";
         case OP_PLL:     return "pll";
-        case OP_POP:     return "pop";
+        case OP_POP_IMP: return "pop imp";
+        case OP_POP_OPX: return "pop opx";
+        case OP_POP_OPY: return "pop opy";
         case OP_AND_IMM: return "and imm";
         case OP_AND_OPX: return "and opx";
         case OP_AND_ABS: return "and abs";
@@ -50,6 +52,10 @@ char* opcode_to_string(opcode opcode) {
         case OP_SHR_IMM: return "shr imm";
         case OP_SHR_OPX: return "shr opx";
         case OP_SHR_ABS: return "shr abs";
+        case OP_NOT_IMP: return "not imp";
+        case OP_NOT_OPX: return "not opx";
+        case OP_NOT_OPY: return "not opy";
+        case OP_NOT_ABS: return "not abs";
         case OP_ADD_IMM: return "add imm";
         case OP_ADD_OPX: return "add opx";
         case OP_ADD_ABS: return "add abs";
@@ -77,6 +83,7 @@ char* opcode_to_string(opcode opcode) {
         case OP_JNC:     return "jnc";
         case OP_CLL:     return "cll";
         case OP_RET:     return "ret";
+        case OP_RTI:     return "rti";
         case OP_HLT:     return "hlt";
 
         default: return "???";

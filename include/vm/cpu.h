@@ -11,12 +11,16 @@ typedef struct cpu {
     byte sp;
     word pc;
 
-    struct {
-        bool z : 1; // zero
-        bool c : 1; // carry
-        bool h : 1; // halt
-        int _  : 6;
-    } flags;
+    union {
+        struct {
+            bool z : 1; // zero
+            bool c : 1; // carry
+            bool h : 1; // halt
+            bool i : 1; // disable interrupts
+            int _  : 5;
+        } flags;
+        byte status;
+    };
 } cpu;
 
 void log_status(cpu* cpu);
@@ -25,5 +29,7 @@ void reset_cpu(cpu* cpu);
 void load_rom(cpu* cpu, byte* data);
 void load_reset_vector(cpu* cpu);
 
-void execute_instr(cpu* cpu);
+void run_reset_interrupt(cpu* cpu);
+void run_input_interrupt(cpu* cpu, int key, bool pressed);
+
 void execute(cpu* cpu);

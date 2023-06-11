@@ -117,7 +117,7 @@ static void parse_operand(instr_node* i, unsigned ops) {
     else if (ops & OP_OPY && match(TOK_REGISTER_Y)) return;
 
     else if (ops & OP_ABS && match(TOK_ABS_LITERAL))
-        i->as.imm_literal = prev_token.as.literal;
+        i->as.abs_literal = prev_token.as.literal;
 
     else if (ops & OP_ABS && match(TOK_ABS_IDENTIFIER))
         i->as.ident = copy_identifier(
@@ -138,6 +138,7 @@ static node* parse_instruction() {
 #define Op(types) parse_operand(&n->as.instr, types); break
 
     switch (prev_token.as.ins) {
+        case INS_NOP: Op(OP_NO_OP);
         
         // load/store operations
         case INS_LDA: Op(OP_IMM | OP_OPX | OP_OPY | OP_ABS);
@@ -163,7 +164,7 @@ static node* parse_instruction() {
         case INS_TXS: Op(OP_NO_OP);
         case INS_PSH: Op(OP_IMM | OP_IMP | OP_OPX | OP_OPY);
         case INS_PLL:
-        case INS_POP: Op(OP_NO_OP);
+        case INS_POP: Op(OP_IMP | OP_OPX | OP_OPY);
 
         // bitwise operations
         case INS_AND:
@@ -171,6 +172,7 @@ static node* parse_instruction() {
         case INS_XOR:
         case INS_SHL:
         case INS_SHR: Op(OP_IMM | OP_OPX | OP_ABS);
+        case INS_NOT: Op(OP_IMP | OP_OPX | OP_OPY | OP_ABS);
 
         // numerical operations
         case INS_ADD:
@@ -188,10 +190,24 @@ static node* parse_instruction() {
         case INS_JNC:
         case INS_CLL: Op(OP_ABS);
         case INS_RET:
+        case INS_RTI:
         case INS_HLT: Op(OP_NO_OP);
     }
 
 #undef Op
+
+    return n;
+}
+
+static node* parse_alias() {
+    node* n = malloc(sizeof(node));
+    n->type = NODE_ALIAS;
+    n->as.alias.ident = copy_identifier(
+        prev_token.start, prev_token.length);
+
+    consume(TOK_EQUAL, "'='");
+    consume(TOK_ABS_LITERAL, "an address");
+    n->as.alias.address = prev_token.as.literal;
 
     return n;
 }
@@ -209,7 +225,7 @@ static node* parse_label() {
         n->as.label.as.literal = prev_token.as.literal;
     }
 
-    consume(TOK_COLON, "a ':'");
+    consume(TOK_COLON, "':' or '='");
     return n;
 }
 
@@ -220,8 +236,10 @@ static node* parse_node() {
     else if (match(TOK_INSTRUCTION))
         return parse_instruction();
 
-    else if (match(TOK_ABS_IDENTIFIER) || match(TOK_ABS_LITERAL))
-        return parse_label();
+    else if (match(TOK_ABS_IDENTIFIER) || match(TOK_ABS_LITERAL)) {
+        if (check(TOK_EQUAL)) return parse_alias();
+        else return parse_label();
+    }
 
     error_at(&curr_token, "unexpected token");
     return NULL;

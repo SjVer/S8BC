@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
     
     // parse
     node* nodes = parse();
-    if (cli_args.verbose) log_nodes(nodes);
+    // if (cli_args.verbose) log_nodes(nodes);
 
     // solve addresses
     solve_addresses(nodes);

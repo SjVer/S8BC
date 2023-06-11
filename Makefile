@@ -1,8 +1,8 @@
 # compiler options
 CC = clang
-MUTE = 
+MUTE = unused-command-line-argument
 DEFS = COMPILER=\"$(CC)\" APP_VERSION_PATCH=\"$(shell git rev-parse --short HEAD)\"
-CXXFLAGS = -Iinclude -Wall $(addprefix -Wno-,$(MUTE)) $(addprefix -D,$(DEFS)) -g
+CXXFLAGS = -Iinclude -Wall -I/usr/include/SDL2 -lSDL2 -lSDL2_ttf
 LDFLAGS = 
 
 # command options
@@ -22,6 +22,8 @@ PRODUCTS = $(notdir $(wildcard $(SRCDIR)/*))
 
 SRC = $(wildcard $(SRCDIR)/*$(EXT))
 OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
+
+CXXFLAGS += $(addprefix -Wno-,$(MUTE)) $(addprefix -D,$(DEFS))
 
 Y = \033[0;33m$$(tput bold)
 P = \033[1;35m$$(tput bold)

@@ -3,12 +3,14 @@
 
 #include "instructions.h"
 #include "vm/common.h"
+#include "vm/gui.h"
 #include "vm/cpu.h"
 
 struct cli_args cli_args = {
     .verbose = false,
     .rom_file = NULL,
     .debug = false,
+    .slow = false,
 };
 
 // CLI argument stuff
@@ -24,6 +26,7 @@ static struct argp_option options[] = {
     {"usage", 	 'u', 0, 0, "Display a usage information message."},
     {"verbose",  'v', 0, 0, "Produce verbose output."},
     {"debug",    'd', 0, 0, "Produce debug output."},
+    {"slow",     's', 0, 0, "Slow down execution."},
     {0}
 };
 
@@ -52,6 +55,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
         case 'd':
             args->debug = true;
+            break;
+        case 's':
+            args->slow = true;
             break;
 
         case ARGP_KEY_ARG:
@@ -84,22 +90,37 @@ byte* read_rom_file() {
     return data;
 }
 
+cpu* main_cpu;
+
+void halt_cpu() {
+    if (cli_args.verbose) Log("interrupted!");
+    main_cpu->flags.h = true;
+}
+
 int main(int argc, char** argv) {
     if (argp_parse(&argp, argc, argv, 0, 0, &cli_args))
         Abort(STATUS_CLI_ERROR);
     
-    // initialize the CPU
+    // initialize the CPU and GUI
     struct cpu cpu;
     reset_cpu(&cpu);
+    init_gui();
 
     // read and load ROM
     byte* rom = read_rom_file();
     load_rom(&cpu, rom);
     free(rom);
 
+    // register the interrupt handler
+    main_cpu = &cpu;
+    signal(SIGINT, halt_cpu);
+
     // run the CPU
     load_reset_vector(&cpu);
     execute(&cpu);
+
+    // stop the GUI
+    quit_gui();
 
     return STATUS_SUCCESS;
 }
