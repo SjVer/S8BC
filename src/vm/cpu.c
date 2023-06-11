@@ -397,7 +397,7 @@ void execute_instr(cpu* cpu) {
 
 void execute(cpu* cpu) {
     printf("\e[2J");
-    
+
     while (!cpu->flags.h) {
         if (cli_args.debug) {
             printf("\n");
@@ -410,4 +410,6 @@ void execute(cpu* cpu) {
 
         usleep(CYCLE_DELAY);
     }
+
+    for (;;) {}
 }
