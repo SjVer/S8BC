@@ -3,12 +3,13 @@
 
 #include "instructions.h"
 #include "vm/common.h"
-#include "vm/gui.h"
+#include "vm/tty.h"
 #include "vm/cpu.h"
 
 struct cli_args cli_args = {
     .verbose = false,
     .rom_file = NULL,
+    .pty = false,
     .debug = false,
     .slow = false,
 };
@@ -25,6 +26,7 @@ static struct argp_option options[] = {
     {"version",  'V', 0, 0, "Display version information."},
     {"usage", 	 'u', 0, 0, "Display a usage information message."},
     {"verbose",  'v', 0, 0, "Produce verbose output."},
+    {"pty",      'p', 0, 0, "Have a pseudo-TTY in the console."},
     {"debug",    'd', 0, 0, "Produce debug output."},
     {"slow",     's', 0, 0, "Slow down execution."},
     {0}
@@ -53,6 +55,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             args->verbose = true;
             break;
 
+        case 'p':
+            args->pty = true;
+            break;
         case 'd':
             args->debug = true;
             break;
@@ -90,37 +95,47 @@ byte* read_rom_file() {
     return data;
 }
 
-cpu* main_cpu;
+volatile cpu* main_cpu;
+volatile bool is_stubborn;
 
 void halt_cpu() {
-    if (cli_args.verbose) Log("interrupted!");
-    main_cpu->flags.h = true;
+    if (is_stubborn) {
+        if (cli_args.verbose) Log("forcefully interrupted!");
+        raise(SIGKILL);
+    } else {
+        if (cli_args.verbose) Log("interrupted!");
+        main_cpu->flags.h = true;
+        is_stubborn = true;
+    }
 }
 
 int main(int argc, char** argv) {
     if (argp_parse(&argp, argc, argv, 0, 0, &cli_args))
         Abort(STATUS_CLI_ERROR);
     
-    // initialize the CPU and GUI
+    // initialize the CPU
     struct cpu cpu;
     reset_cpu(&cpu);
-    init_gui();
+
+    // register the interrupt handler
+    main_cpu = &cpu;
+    is_stubborn = false;
+    signal(SIGINT, halt_cpu);
+
+    // initalize the PTY
+    init_tty();
 
     // read and load ROM
     byte* rom = read_rom_file();
     load_rom(&cpu, rom);
     free(rom);
 
-    // register the interrupt handler
-    main_cpu = &cpu;
-    signal(SIGINT, halt_cpu);
-
     // run the CPU
     load_reset_vector(&cpu);
     execute(&cpu);
 
     // stop the GUI
-    quit_gui();
+    quit_tty();
 
     return STATUS_SUCCESS;
 }

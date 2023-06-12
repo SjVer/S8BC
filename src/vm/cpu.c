@@ -4,7 +4,7 @@
 
 #include "instructions.h"
 #include "vm/cpu.h"
-#include "vm/gui.h"
+#include "vm/tty.h"
 
 #define Addr_x(cpu) (((cpu)->pc & 0xff00) | (cpu)->x)
 #define Addr_y(cpu) (((cpu)->pc & 0xff00) | (cpu)->y)
@@ -457,7 +457,7 @@ void execute(cpu* cpu) {
             usleep(1e6 - CYCLE_DELAY);
 
         execute_instr(cpu);
-        draw_gui(cpu);
+        update_tty(cpu);
 
         usleep(CYCLE_DELAY);
     }
