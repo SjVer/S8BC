@@ -91,7 +91,9 @@ void draw_gui(cpu* cpu) {
 
 	// draw the text
 	for (int y = 0; y < TEXT_HEIGHT; y++) {
+		printf("Y = %d\n", y);
 		for (int x = 0; x < TEXT_WIDTH; x++) {
+			printf("X = %d\n", x);
 			int offset = TEXT_START + y * TEXT_HEIGHT + x * TEXT_WIDTH;
 			if (!cpu->memory[offset]) continue;
 			char str[2] = {cpu->memory[offset], 0};

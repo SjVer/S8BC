@@ -73,26 +73,26 @@ enum {
 	_IO_END = IO_END,
 };
 enum {
-    _IO_KEY_START = 0x00,
+	_IO_KEY_START = 0x00,
 
-    IO_KEY_ESCAPE,
-    IO_KEY_RETURN,
-    IO_KEY_DELETE,
-    IO_KEY_CONTROL,
-    IO_KEY_SHIFT,
-    IO_KEY_ALT,
+	IO_KEY_ESCAPE,
+	IO_KEY_RETURN,
+	IO_KEY_DELETE,
+	IO_KEY_CONTROL,
+	IO_KEY_SHIFT,
+	IO_KEY_ALT,
 
-    IO_KEY_LEFT,
-    IO_KEY_RIGHT,
-    IO_KEY_UP,
-    IO_KEY_DOWN,
+	IO_KEY_LEFT,
+	IO_KEY_RIGHT,
+	IO_KEY_UP,
+	IO_KEY_DOWN,
 
-    IO_KEY_A,
-    // ...
-    IO_KEY_Z = IO_KEY_A + 'z' - 'a',
+	IO_KEY_A,
+	// ...
+	IO_KEY_Z = IO_KEY_A + 'z' - 'a',
 
-    IO_KEY_ANY = 0xfe,
-    _IO_KEY_END = 0xff,
+	IO_KEY_ANY = 0xfe,
+	_IO_KEY_END = 0xff,
 };
 
 // 1024 bytes
