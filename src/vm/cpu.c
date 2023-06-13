@@ -2,6 +2,7 @@
 #define __USE_XOPEN_EXTENDED
 #include <unistd.h>
 
+#include "specs.h"
 #include "instructions.h"
 #include "vm/cpu.h"
 #include "vm/tty.h"
@@ -79,7 +80,7 @@ static void push_pc_to_stack(cpu* cpu) {
     push_to_stack(cpu, cpu->pc & 0xff);
 }
 
-void run_reset_interrupt(cpu* cpu) {
+void start_reset_interrupt(cpu* cpu) {
     if (cpu->flags.i) return;
 
     reset_cpu(cpu);
@@ -89,21 +90,25 @@ void run_reset_interrupt(cpu* cpu) {
         Log("reset interrupt, jumping to $%04x", cpu->pc);
 }
 
-void run_input_interrupt(cpu* cpu, int key, bool pressed) {
+void start_input_interrupt(cpu* cpu) {
     if (cpu->flags.i) return;
 
-    if (cli_args.debug) {
+    if (cli_args.debug || 1) {
         putchar('\n');
-        if (pressed) Log("key %d pressed ($%04x)", key, IO_START | key);
-        else Log("key %d unpressed ($%04x)", key, IO_START | key);
+        Log("received input: %d", cpu->memory[IO_TTY_INPUT]);
+    }
+
+    // TODO: temporary?
+    if (cpu->memory[IO_TTY_INPUT] == SIGQUIT) {
+        raise(SIGINT);
+        return;
     }
 
     push_pc_to_stack(cpu);
     push_to_stack(cpu, cpu->status);
+    
     cpu->pc = cpu->memory[INPUT_VECTOR]
             | cpu->memory[INPUT_VECTOR + 1] << 8;
-    cpu->memory[IO_KEYCODE] = key;
-    cpu->memory[IO_STATUS] = pressed & 0b00000001;
 
     if (cli_args.verbose)
         Log("input interrupt, jumping to $%04x", cpu->pc);

@@ -1,30 +1,19 @@
-STATUS_CHAR = $0300
-KEYCODE_CHAR = $031f
-KEYCODE_ADDR = $0202
+TTY_INPUT = $0201
+TTY_OUTPUT = $0202
 
 reset:
-  lda #$5f ; '_'
-  ldx #$20 ; ' '
-  sta STATUS_CHAR
-  sta KEYCODE_CHAR
-
-loop:
-  ; sta STATUS_CHAR
-  ; sax
-  jmp loop
+  jmp reset
 
 input:
-  rti
-  ; save reg
-  psh
-
-  ; print the keycode
-  lda KEYCODE_ADDR
-  add #86 ; keycode to ascii
-  sta KEYCODE_CHAR
-
-  ; restore reg and return
-  pop
+  lda TTY_INPUT
+  sta TTY_OUTPUT
+  
+  sub #13
+  jnz input_done
+  
+  lda #$0a
+  sta TTY_OUTPUT
+input_done:
   rti
 
 $fffc: .word #input

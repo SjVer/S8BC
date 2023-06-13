@@ -29,7 +29,7 @@ void reset_cpu(cpu* cpu);
 void load_rom(cpu* cpu, byte* data);
 void load_reset_vector(cpu* cpu);
 
-void run_reset_interrupt(cpu* cpu);
-void run_input_interrupt(cpu* cpu, int key, bool pressed);
+void start_reset_interrupt(cpu* cpu);
+void start_input_interrupt(cpu* cpu);
 
 void execute(cpu* cpu);

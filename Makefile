@@ -2,7 +2,7 @@
 CC = clang
 MUTE = unused-command-line-argument
 DEFS = COMPILER=\"$(CC)\" APP_VERSION_PATCH=\"$(shell git rev-parse --short HEAD)\"
-CXXFLAGS = -Iinclude -Wall -I/usr/include/SDL2 -lSDL2 -lSDL2_ttf
+CXXFLAGS = -std=c11 -Iinclude -Wall -I/usr/include/SDL2 -lSDL2 -lSDL2_ttf
 LDFLAGS = 
 
 # command options
