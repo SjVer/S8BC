@@ -124,12 +124,19 @@ static token instruction_or_identifier() {
         Match_instr("div", INS_DIV);
         Match_instr("inc", INS_INC);
         Match_instr("dec", INS_DEC);
+        Match_instr("cmp", INS_CMP);
 
         Match_instr("jmp", INS_JMP);
-        Match_instr("jiz", INS_JIZ);
-        Match_instr("jnz", INS_JNZ);
-        Match_instr("jic", INS_JIC);
-        Match_instr("jnc", INS_JNC);
+        Match_instr("jzs", INS_JZS);
+        Match_instr("jzn", INS_JZN);
+        Match_instr("jcs", INS_JCS);
+        Match_instr("jcn", INS_JCN);
+        Match_instr("jes", INS_JES);
+        Match_instr("jen", INS_JEN);
+        Match_instr("jls", INS_JLS);
+        Match_instr("jln", INS_JLN);
+        Match_instr("jgs", INS_JGS);
+        Match_instr("jgn", INS_JGN);
         Match_instr("cll", INS_CLL);
         Match_instr("ret", INS_RET);
         Match_instr("rti", INS_RTI);

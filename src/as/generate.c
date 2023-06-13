@@ -118,13 +118,20 @@ static void gen_instruction(word a, instr_node* i) {
 		case INS_DIV: Op(OP_DIV_IMM, 0, OP_DIV_OPX, 0, OP_DIV_ABS);
 		case INS_INC: Op(0, OP_INC_IMP, OP_INC_OPX, OP_INC_OPY, OP_INC_ABS);
 		case INS_DEC: Op(0, OP_DEC_IMP, OP_DEC_OPX, OP_DEC_OPY, OP_DEC_ABS);
+		case INS_CMP: Op(OP_CMP_IMM, 0, OP_CMP_OPX, OP_CMP_OPY, OP_CMP_ABS);
 
 		// control flow operations
 		case INS_JMP: Op(0, 0, 0, 0, OP_JMP);
-		case INS_JIZ: Op(0, 0, 0, 0, OP_JIZ);
-		case INS_JNZ: Op(0, 0, 0, 0, OP_JNZ);
-		case INS_JIC: Op(0, 0, 0, 0, OP_JIC);
-		case INS_JNC: Op(0, 0, 0, 0, OP_JNC);
+		case INS_JZS: Op(0, 0, 0, 0, OP_JZS);
+		case INS_JZN: Op(0, 0, 0, 0, OP_JZN);
+		case INS_JCS: Op(0, 0, 0, 0, OP_JCS);
+		case INS_JCN: Op(0, 0, 0, 0, OP_JCN);
+		case INS_JES: Op(0, 0, 0, 0, OP_JES);
+		case INS_JEN: Op(0, 0, 0, 0, OP_JEN);
+		case INS_JLS: Op(0, 0, 0, 0, OP_JLS);
+		case INS_JLN: Op(0, 0, 0, 0, OP_JLN);
+		case INS_JGS: Op(0, 0, 0, 0, OP_JGS);
+		case INS_JGN: Op(0, 0, 0, 0, OP_JGN);
 		case INS_CLL: Op(0, 0, 0, 0, OP_CLL);
 		case INS_RET: Op(0, OP_RET, 0, 0, 0);
 		case INS_RTI: Op(0, OP_RTI, 0, 0, 0);

@@ -181,13 +181,20 @@ static node* parse_instruction() {
         case INS_DIV: Op(OP_IMM | OP_OPX | OP_ABS);
         case INS_INC:
         case INS_DEC: Op(OP_IMP | OP_OPX | OP_OPY | OP_ABS);
+        case INS_CMP: Op(OP_IMM | OP_OPX | OP_OPY | OP_ABS);
 
         // control flow operations
         case INS_JMP:
-        case INS_JIZ:
-        case INS_JNZ:
-        case INS_JIC:
-        case INS_JNC:
+        case INS_JZS:
+        case INS_JZN:
+        case INS_JCS:
+        case INS_JCN:
+        case INS_JES:
+        case INS_JEN:
+        case INS_JLS:
+        case INS_JLN:
+        case INS_JGS:
+        case INS_JGN:
         case INS_CLL: Op(OP_ABS);
         case INS_RET:
         case INS_RTI:

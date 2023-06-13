@@ -15,9 +15,12 @@ typedef struct cpu {
         struct {
             bool z : 1; // zero
             bool c : 1; // carry
-            bool h : 1; // halt
+            bool e : 1; // equal
+            bool l : 1; // less than
+            bool g : 1; // greater than
+            bool _ : 1;
             bool i : 1; // disable interrupts
-            int _  : 5;
+            bool h : 1; // halt
         } flags;
         byte status;
     };

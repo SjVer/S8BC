@@ -21,7 +21,7 @@
     ABS: absolute (byte at literal address)
 */
 
-typedef enum opcode {
+typedef enum {
     OP_NOP,     // no operation
 
     // load/store operations
@@ -130,13 +130,25 @@ typedef enum opcode {
     OP_DEC_OPY,
     OP_DEC_ABS,
 
+    OP_CMP_IMM, // compare A and OP
+    OP_CMP_OPX,
+    OP_CMP_OPY,
+    OP_CMP_ABS,
+
     // control flow operations
 
     OP_JMP,     // jump to OP
-    OP_JIZ,     // jump to OP if zero flag set
-    OP_JNZ,     // jump to OP if zero flag not set
-    OP_JIC,     // jump to OP if carry flag set
-    OP_JNC,     // jump to OP if carry flag not set
+    OP_JZS,     // jump to OP if zero flag set
+    OP_JZN,     // jump to OP if zero flag not set
+    OP_JCS,     // jump to OP if carry flag set
+    OP_JCN,     // jump to OP if carry flag not set
+    OP_JES,     // jump to OP if equal flag set
+    OP_JEN,     // jump to OP if equal flag not set
+    OP_JLS,     // jump to OP if less than flag set
+    OP_JLN,     // jump to OP if less than flag not set
+    OP_JGS,     // jump to OP if greater flag set
+    OP_JGN,     // jump to OP if greater flag not set
+    
     OP_CLL,     // call a subroutine at OP
     OP_RET,     // return from a subroutine
     OP_RTI,     // return from an interrupt

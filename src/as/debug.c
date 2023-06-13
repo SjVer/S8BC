@@ -56,10 +56,10 @@ const char* string_of_ins(instruction ins) {
         case INS_INC: return "inc";
         case INS_DEC: return "dec";
         case INS_JMP: return "jmp";
-        case INS_JIZ: return "jiz";
-        case INS_JNZ: return "jnz";
-        case INS_JIC: return "jic";
-        case INS_JNC: return "jnc";
+        case INS_JZS: return "jiz";
+        case INS_JZN: return "jnz";
+        case INS_JCS: return "jic";
+        case INS_JCN: return "jnc";
         case INS_CLL: return "cll";
         case INS_RET: return "ret";
         case INS_RTI: return "rti";

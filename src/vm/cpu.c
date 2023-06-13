@@ -44,10 +44,7 @@ void reset_cpu(cpu* cpu) {
     cpu->y = 0;
     cpu->sp = STACK_END & 0xff;
     cpu->pc = 0;
-    cpu->flags.z = false;
-    cpu->flags.c = false;
-    cpu->flags.h = false;
-    cpu->flags.i = false;
+    cpu->status = 0;
 }
 
 void load_rom(cpu* cpu, byte* data) {
@@ -65,6 +62,12 @@ void load_reset_vector(cpu* cpu) {
 static void set_flags_by_result(cpu* cpu, unsigned result) {
     cpu->flags.c = result > 0xff;
     cpu->flags.z = result == 0;
+}
+
+static void set_flags_by_comparison(cpu* cpu, byte operand) {
+    cpu->flags.e = cpu->a == operand;
+    cpu->flags.l = cpu->a < operand;
+    cpu->flags.g = cpu->a > operand;
 }
 
 static void push_to_stack(cpu* cpu, byte value) {
@@ -410,31 +413,70 @@ static void execute_instr(cpu* cpu) {
             set_flags_by_result(cpu, --Byte_at_fetch(cpu));
             break;
 
+        case OP_CMP_IMM:
+            set_flags_by_comparison(cpu, Fetch(cpu));
+            break;
+        case OP_CMP_OPX:
+            set_flags_by_comparison(cpu, cpu->x);
+            break;
+        case OP_CMP_OPY:
+            set_flags_by_comparison(cpu, cpu->y);
+            break;
+        case OP_CMP_ABS:
+            set_flags_by_comparison(cpu, Byte_at_fetch(cpu));
+            break;
+
         // control flow operations
 
         case OP_JMP:
             cpu->pc = Fetch_word(cpu);
             break;
-        case OP_JIZ:
+        case OP_JZS:
             if (cpu->flags.z) cpu->pc = Fetch_word(cpu);
             else cpu->pc += 2;
             break;
-        case OP_JNZ:
+        case OP_JZN:
             if (!cpu->flags.z) cpu->pc = Fetch_word(cpu);
             else cpu->pc += 2;
             break;
-        case OP_JIC:
+        case OP_JCS:
             if (cpu->flags.c) cpu->pc = Fetch_word(cpu);
             else cpu->pc += 2;
             break;
-        case OP_JNC:
+        case OP_JCN:
             if (!cpu->flags.c) cpu->pc = Fetch_word(cpu);
             else cpu->pc += 2;
             break;
-        case OP_CLL:
-            push_pc_to_stack(cpu);
-            cpu->pc = Fetch_word(cpu);
+        case OP_JES:
+            if (cpu->flags.e) cpu->pc = Fetch_word(cpu);
+            else cpu->pc += 2;
             break;
+        case OP_JEN:
+            if (!cpu->flags.e) cpu->pc = Fetch_word(cpu);
+            else cpu->pc += 2;
+            break;
+        case OP_JLS:
+            if (cpu->flags.l) cpu->pc = Fetch_word(cpu);
+            else cpu->pc += 2;
+            break;
+        case OP_JLN:
+            if (!cpu->flags.l) cpu->pc = Fetch_word(cpu);
+            else cpu->pc += 2;
+            break;
+        case OP_JGS:
+            if (cpu->flags.g) cpu->pc = Fetch_word(cpu);
+            else cpu->pc += 2;
+            break;
+        case OP_JGN:
+            if (!cpu->flags.g) cpu->pc = Fetch_word(cpu);
+            else cpu->pc += 2;
+            break;
+        case OP_CLL: {
+            word addr = Fetch_word(cpu);
+            push_pc_to_stack(cpu);
+            cpu->pc = addr;
+            break;
+        }
         case OP_RET:
             cpu->pc = pop_from_stack(cpu);
             cpu->pc |= pop_from_stack(cpu) << 8;
