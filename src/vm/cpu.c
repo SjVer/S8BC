@@ -26,8 +26,9 @@ void log_status(cpu* cpu) {
         cpu->a, cpu->x, cpu->y
     );
     Log(
-        "Z: %d, C: %d, H: %d",
-        cpu->flags.z, cpu->flags.c, cpu->flags.h
+        "ZCELG_IH: %%%d%d%d%d%d%d%d%d",
+        cpu->flags.z, cpu->flags.c, cpu->flags.e, cpu->flags.l, 
+        cpu->flags.g, 0, cpu->flags.i, cpu->flags.h
     );
 
     byte opcode = cpu->memory[cpu->pc];

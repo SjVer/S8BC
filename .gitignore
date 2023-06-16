@@ -2,5 +2,6 @@ bin/
 .vscode/
 .cache/
 
+test/*.rom
 compile_commands.json
 session.vim
