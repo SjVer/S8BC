@@ -6,7 +6,7 @@ OPCODE_REGEX = r"(\s+)OP_(\w+)(\s+)= 0x.*,(.*)"
 MD_SRC_FILE = "docs/OPCODES.md"
 MD_START_REGEX = "| --- | --- | --- |"
 MD_END_REGEX = "<!-- END OPCODES -->"
-MD_FORMAT = "| ${:02x} | {} | {} |\n"
+MD_FORMAT = "| ${:02X} | `{}` | {} |\n"
 
 opcodes = {}
 modes = {
