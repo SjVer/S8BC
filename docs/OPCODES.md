@@ -2,7 +2,6 @@
 
 | opcode | instruction | mode |
 | --- | --- | --- |
-<!-- START OPCODES -->
 | $00 | nop |  |
 | $01 | lda | immediate |
 | $02 | lda | operand X |

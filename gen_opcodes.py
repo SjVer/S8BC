@@ -4,7 +4,7 @@ H_SRC_FILE = "include/instructions.h"
 OPCODE_REGEX = r"(\s+)OP_(\w+)(\s+)= 0x.*,(.*)"
 
 MD_SRC_FILE = "docs/OPCODES.md"
-MD_START_REGEX = "<!-- START OPCODES -->"
+MD_START_REGEX = "| --- | --- | --- |"
 MD_END_REGEX = "<!-- END OPCODES -->"
 MD_FORMAT = "| ${:02x} | {} | {} |\n"
 
