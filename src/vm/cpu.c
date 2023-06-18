@@ -7,8 +7,8 @@
 #include "vm/cpu.h"
 #include "vm/tty.h"
 
-#define Addr_x(cpu) (((cpu)->pc & 0xff00) | (cpu)->x)
-#define Addr_y(cpu) (((cpu)->pc & 0xff00) | (cpu)->y)
+#define Addr_x(cpu) (((cpu)->pc + (cpu)->x)
+#define Addr_y(cpu) (((cpu)->pc + (cpu)->y)
 
 #define Fetch(cpu) (cpu->memory[cpu->pc++])
 #define Fetch_word(cpu) (Fetch(cpu) | Fetch(cpu) << 8)
