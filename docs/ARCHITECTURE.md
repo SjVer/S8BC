@@ -20,7 +20,7 @@ Lastly the S8BC has a 16-bit program counter and an 8-bit stack pointer.
 ## Memory
 
 The S8BC has an addressing range from `$0000` to `$ffff` and has 32kb of RAM and 32kb of ROM.
-RAM lives at `$0000-$7fff` and ROM at `$8000-$ffff` and memory is mapped as follows (with inclusive bounds):
+RAM lives at `$0000`-`$7fff` and ROM at `$8000-$ffff` and memory is mapped as follows (with inclusive bounds):
 
 - `$0000-$00ff`: zero page
 - `$0100-$01ff`: stack
@@ -46,7 +46,7 @@ Programs are loaded as ROM at `$8000` and execution starts at the predefined res
 
 The stack lives in memory at address `$0100` to `$01ff`.
 The address of the top of the stack is composed of the start of the stack (`$0100`) bitwise-OR'ed with the stack pointer.
-Pushing onto the stack decrements the stack pointer, and popping off the stack increments it.
+The stack pointer is initialized as `$ff`, pushing onto the stack decrements it, and popping off the stack increments it.
 
 ## Interrupts
 
