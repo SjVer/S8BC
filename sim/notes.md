@@ -1,15 +1,15 @@
-# Control Word
+# Control Signals
 
 | bit | name | operation |
 | --- | --- | --- |
-| 0  | II | instruction register in |
+| 0  | HL | halt execution |
 | 1  | CE | program counter enable |
 | 2  | CO | program counter out |
-| 3  | MI | memory address in |
-| 4  | RD | read memory |
-| 5  | WR | write memory |
-| 6  | | |
-| 7  | | |
+| 3  | RD | |
+| 4  | WR | |
+| 5  | II | |
+| 6  | MI | |
+| 7  | MO | |
 | 8  | AI | A register in |
 | 9  | AO | A register out |
 | 10 | XI | X register in |
@@ -23,12 +23,12 @@
 
 | step 1 | step 2 |
 | --- | --- |
-| MI/CO | II/RD/CE |
+| CO/MI | CE/RD/WR |
 
 | opcode | instruction  | step 3 | step 4 | step 5 | step 4 |
 | --- | ---             | ---    | ---    | ---    | ---    |
-| $00 | `nop`           | 
-| $01 | `lda` immediate |
+| $00 | `nop`           |        |        |        |        | 
+| $01 | `lda` immediate | CE/
 | $02 | `lda` operand X |
 | $03 | `lda` operand Y |
 | $04 | `lda` absolute  |
