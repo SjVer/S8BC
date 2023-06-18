@@ -5,7 +5,7 @@
 These instructions transfer a single byte between memory and one of the registers.
 Load operations can load an immediate byte or a byte from memory.
 The `ldi` and `sti` instructions operate on an address stored in memory.
-The `sta` instruction can store at an address resulting from adding PC to X or Y.   
+The `sta` instruction can store at an address composed of the lower 8 bits of PC and X or Y as higher 8 bits.   
 
 `lda`: Loads a byte into A
 
