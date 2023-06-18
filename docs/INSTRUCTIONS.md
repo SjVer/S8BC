@@ -98,6 +98,9 @@ All these instructions set C and Z according to the result.
 ## Control Flow Operations
 
 These instructions change the control flow of execution.
+All jump instructions operate on an immediate 16-bit address.
+The `cll` instruction calls by pushing PC onto the stack, the `ret` instruction does the opposite.
+The `rti` instruction acts the same as `ret` but also pops the flags.
 
 `jmp`: Jump to an address
 

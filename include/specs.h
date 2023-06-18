@@ -26,10 +26,6 @@ typedef uint16_t word;
           │ i/o     │
     $02ff │         │
     $0300 ├─────────┤
-          │ text    │
-          │ output  │
-    $06ff │         │
-    $0700 ├─────────┤
           │ unused  │
           │         │
           .         .
@@ -66,19 +62,9 @@ typedef uint16_t word;
 #define IO_START 0x0200
 #define IO_END 0x02ff // incl.
 enum {
-	_IO_START = IO_START,
-
-	IO_TTY_INPUT,
-    IO_TTY_OUTPUT,
-
-	_IO_END = IO_END,
+	IO_TTY_INPUT  = 0x0201,
+    IO_TTY_OUTPUT = 0x0202,
 };
-
-// 1024 bytes
-#define TEXT_START 0x0300
-#define TEXT_END 0x06ff // incl.
-#define TEXT_WIDTH 32
-#define TEXT_HEIGHT 32
 
 // 32kb (32768 bytes)
 #define ROM_START 0x8000
