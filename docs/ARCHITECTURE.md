@@ -22,12 +22,12 @@ Lastly the S8BC has a 16-bit program counter and an 8-bit stack pointer.
 The S8BC has an addressing range from `$0000` to `$ffff` and has 32kb of RAM and 32kb of ROM.
 RAM lives at `$0000-$7fff` and ROM at `$8000-$ffff` and memory is mapped as follows (with inclusive bounds):
 
-- `$0000-$00ff`: Zero page;
-- `$0100-$01ff`: Stack;
-- `$0200-$02ff`: I/O;
-- `$0300-$7fff`: Unused;
-- `$8000-$fff0`: General ROM;
-- `$fffc-$ffff`: Interrupt vectors.
+- `$0000-$00ff`: Zero page
+- `$0100-$01ff`: Stack
+- `$0200-$02ff`: I/O
+- `$0300-$7fff`: Unused
+- `$8000-$fff0`: General ROM
+- `$fffc-$ffff`: Interrupt vectors
 
 The I/O section of RAM is used to interface with external hardware. The standard layout is as follows:
 
@@ -37,8 +37,8 @@ The I/O section of RAM is used to interface with external hardware. The standard
 The interrupt vectors section contains addresses jumped to when interrupts are triggered.
 The layout is as follows:
 
-- `$fffc`: input vector
-- `$fffe`: reset vector
+- `$fffc`: Input vector
+- `$fffe`: Reset vector
 
 Programs are loaded as ROM at `$8000` and execution starts at the predefined reset vector.
 
