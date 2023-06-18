@@ -7,8 +7,8 @@
 #include "vm/cpu.h"
 #include "vm/tty.h"
 
-#define Addr_x(cpu) (((cpu)->pc + (cpu)->x)
-#define Addr_y(cpu) (((cpu)->pc + (cpu)->y)
+#define Addr_x(cpu) ((cpu)->pc + (cpu)->x)
+#define Addr_y(cpu) ((cpu)->pc + (cpu)->y)
 
 #define Fetch(cpu) (cpu->memory[cpu->pc++])
 #define Fetch_word(cpu) (Fetch(cpu) | Fetch(cpu) << 8)
@@ -60,6 +60,11 @@ void load_reset_vector(cpu* cpu) {
         Log("loaded reset vector: $%04x", cpu->pc);
 }
 
+void write_to_memory(cpu* cpu, word addr, byte value) {
+    if (addr >= RAM_START && addr <= RAM_END)
+        cpu->memory[addr] = value;
+}
+
 static void set_flags_by_result(cpu* cpu, unsigned result) {
     cpu->flags.c = result > 0xff;
     cpu->flags.z = result == 0;
@@ -72,7 +77,7 @@ static void set_flags_by_comparison(cpu* cpu, byte operand) {
 }
 
 static void push_to_stack(cpu* cpu, byte value) {
-    cpu->memory[STACK_START | --cpu->sp] = value;
+    write_to_memory(cpu, STACK_START | --cpu->sp, value);
 }
 
 static byte pop_from_stack(cpu* cpu) {
@@ -183,10 +188,10 @@ static void execute_instr(cpu* cpu) {
         }
 
         case OP_STA_OPX:
-            cpu->memory[Addr_x(cpu)] = cpu->a;
+            write_to_memory(cpu, Addr_x(cpu), cpu->a);
             break;
         case OP_STA_OPY:
-            cpu->memory[Addr_y(cpu)] = cpu->a;
+            write_to_memory(cpu, Addr_y(cpu), cpu->a);
             break;
         case OP_STA_ABS:
             Byte_at_fetch(cpu) = cpu->a;
@@ -201,7 +206,7 @@ static void execute_instr(cpu* cpu) {
         case OP_STI_ABS: {
             word op = Fetch_word(cpu);
             word addr = cpu->memory[op] | cpu->memory[op + 1] << 8;
-            cpu->memory[addr] = cpu->a;
+            write_to_memory(cpu, addr, cpu->a);
             break;
         }
         
