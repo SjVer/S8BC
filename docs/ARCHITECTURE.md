@@ -7,20 +7,20 @@ The S8BC (Some 8-Bit CPU) architecture is an 8-Bit little-endian architecture wi
 The S8BC has 3 general-purpose 8-bit registers: the accumulator, X register and Y register.
 It als has an 8-bit status register with the following flags:
 
-- zero: the result of an operation was 0;
-- carry: the result of an operation overflowed;
-- equal: a compared value was equal to another;
-- lesser: a compared value was less than another;
-- greater: a compared value was greater than another;
-- interrupt disable: interrupts are disabled;
-- halt: the CPU is has halted.
+- `Z` (bit 1): the result of an operation was 0;
+- `C` (bit 2): the result of an operation overflowed;
+- `E` (bit 3): a compared value was equal to another;
+- `L` (bit 4): a compared value was less than another;
+- `G` (bit 5): a compared value was greater than another;
+- `I` (bit 7): interrupts are disabled;
+- `H` (bit 8): the CPU is has halted.
 
 Lastly the S8BC has a 16-bit program counter and an 8-bit stack pointer.
 
 ## Memory
 
 The S8BC has an addressing range from `$0000` to `$ffff` and has 32kb of RAM and 32kb of ROM.
-RAM lives at `$0000`-`$7fff` and ROM at `$8000-$ffff` and memory is mapped as follows (with inclusive bounds):
+RAM lives at `$0000-$7fff` and ROM at `$8000-$ffff` and memory is mapped as follows (with inclusive bounds):
 
 - `$0000-$00ff`: zero page
 - `$0100-$01ff`: stack
