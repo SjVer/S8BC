@@ -2,22 +2,54 @@
 
 | bit | name | operation |
 | --- | --- | --- |
-| 0  | HL | halt execution |
-| 1  | CE | program counter enable |
-| 2  | CO | program counter out |
-| 3  | RD | |
-| 4  | WR | |
-| 5  | II | |
-| 6  | MI | |
-| 7  | MO | |
-| 8  | AI | A register in |
-| 9  | AO | A register out |
-| 10 | XI | X register in |
-| 11 | XO | X register out |
-| 12 | YI | Y register in |
-| 13 | YO | Y register out |
-| 14 | | |
-| 15 | | |
+|  0 | PCE | program counter enable |
+|  1 | PCI | program counter in |
+|  2 | PCO | program counter out |
+|  3 | LAI | low address in |
+|  4 | LAO | low address out |
+|  5 | HAI | high address in |
+|  6 | HAO | high address out |
+|  7 | SPI | stack pointer in |
+|  8 | SPO | stack pointer out |
+| <!-- --> | <!-- --> | <!-- --> |
+|  9 | MEI | memory in |
+| 10 | MEO | memory out |
+| <!-- --> | <!-- --> | <!-- --> |
+| 11 | IRI | instruction register in |
+| 12 | ARI | A register in |
+| 13 | ARO | A register out |
+| 14 | XRI | X register in |
+| 15 | XRO | X register out |
+| 16 | YRI | Y register in |
+| 17 | YRO | Y register out |
+| <!-- --> | <!-- --> | <!-- --> |
+| 18 | SRI | status register in |
+| 19 | SRO | status register out |
+| 20 | RFI | result flags in |
+| 21 | CFI | comparison flags in |
+| 22 | IFS | interrupt flag set |
+| 23 | IFC | interrupt flag clear |
+| 24 | HFS | halt flag set |
+| 25 | ZFO | zero flag out |
+| 26 | CFO | carry flag out |
+| 27 | EFO | equal flag out |
+| 28 | LFO | lesser flag out |
+| 29 | GFO | greater flag out |
+| 30 | IFO | interrupt flag out |
+| <!-- --> | <!-- --> | <!-- --> |
+| 31 | AAD | ALU add |
+| 32 | ASU | ALU subtract |
+| 33 | AMU | ALU multiply |
+| 34 | ADI | ALU divide 
+| 35 | AAN | ALU bitwise and |
+| 36 | AIO | ALU bitwise or |
+| 37 | AXO | ALU bitwise xor |
+| 38 | ASL | ALU shift left |
+| 39 | ASR | ALU shift right |
+| 40 | ANO | ALU bitwise not |
+| 41 | AIN | ALU increment |
+| 42 | ADE | ALU decrement |
+| 43 | ALO | ALU out |
 
 # Instruction Steps
 
