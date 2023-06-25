@@ -2,65 +2,69 @@
 
 | bit | name | operation |
 | --- | --- | --- |
-|  0 | PCE | program counter enable |
-|  1 | PCI | program counter in |
-|  2 | PCO | program counter out |
-|  3 | LAI | low address in |
-|  4 | LAO | low address out |
-|  5 | HAI | high address in |
-|  6 | HAO | high address out |
-|  7 | SPI | stack pointer in |
-|  8 | SPO | stack pointer out |
+|  | CLB | connect DB and LB |
+|  | CHB | connect DB and HB |
 | <!-- --> | <!-- --> | <!-- --> |
-|  9 | MEI | memory in |
-| 10 | MEO | memory out |
+|  | PCE | enable PC |
+|  | PCI | PC in from LB and HB |
+|  | PCO | PC out to LB and HB |
 | <!-- --> | <!-- --> | <!-- --> |
-| 11 | IRI | instruction register in |
-| 12 | ARI | A register in |
-| 13 | ARO | A register out |
-| 14 | XRI | X register in |
-| 15 | XRO | X register out |
-| 16 | YRI | Y register in |
-| 17 | YRO | Y register out |
+|  | MAI | MA in from LB and HB |
+|  | MEI | memory in from DB |
+|  | MEO | memory out to DB |
 | <!-- --> | <!-- --> | <!-- --> |
-| 18 | SRI | status register in |
-| 19 | SRO | status register out |
-| 20 | RFI | result flags in |
-| 21 | CFI | comparison flags in |
-| 22 | IFS | interrupt flag set |
-| 23 | IFC | interrupt flag clear |
-| 24 | HFS | halt flag set |
-| 25 | ZFO | zero flag out |
-| 26 | CFO | carry flag out |
-| 27 | EFO | equal flag out |
-| 28 | LFO | lesser flag out |
-| 29 | GFO | greater flag out |
-| 30 | IFO | interrupt flag out |
+|  | SPI | SP in from DB |
+|  | SPO | SP out to DB |
+|  | SPA | SP out to LB and HB |
+|  | IRI | IR in from DB |
 | <!-- --> | <!-- --> | <!-- --> |
-| 31 | AAD | ALU add |
-| 32 | ASU | ALU subtract |
-| 33 | AMU | ALU multiply |
-| 34 | ADI | ALU divide 
-| 35 | AAN | ALU bitwise and |
-| 36 | AIO | ALU bitwise or |
-| 37 | AXO | ALU bitwise xor |
-| 38 | ASL | ALU shift left |
-| 39 | ASR | ALU shift right |
-| 40 | ANO | ALU bitwise not |
-| 41 | AIN | ALU increment |
-| 42 | ADE | ALU decrement |
-| 43 | ALO | ALU out |
+|  | ARI | A in from DB |
+|  | ARO | A out to DB |
+|  | XRI | X in from DB |
+|  | XRO | X out to DB |
+|  | YRI | Y in from DB |
+|  | XRO | Y out to DB |
+| <!-- --> | <!-- --> | <!-- --> |
+|  | AAD | ALU add |
+|  | ASU | ALU subtract |
+|  | AMU | ALU multiply |
+|  | ADI | ALU divide 
+|  | AAN | ALU bitwise and |
+|  | AIO | ALU bitwise or |
+|  | AXO | ALU bitwise xor |
+|  | ASL | ALU shift left |
+|  | ASR | ALU shift right |
+|  | ANO | ALU bitwise not |
+|  | AIN | ALU increment |
+|  | ADE | ALU decrement |
+|  | ALO | ALU out to DB |
+| <!-- --> | <!-- --> | <!-- --> |
+|  | SRI | SR in from DB |
+|  | SRO | SR out to DB |
+|  | SRF | set result flags |
+|  | SCF | set comparison flags |
+|  | SIF | set interrupt flag |
+|  | CIF | clear interrupt flag |
+|  | SHF | set halt flag |
+|  | ZFO | zero flag out to JE |
+|  | CFO | carry flag out to JE |
+|  | EFO | equal flag out to JE |
+|  | LFO | lesser flag out to JE |
+|  | GFO | greater flag out to JE |
+|  | IFO | interrupt flag out to JE |
+| <!-- --> | <!-- --> | <!-- --> |
+|  | END | end instruction |
 
 # Instruction Steps
 
 | step 1 | step 2 |
 | --- | --- |
-| CO/MI | CE/RD/WR |
+| PCO/MAI | PCE/MEO/IRI |
 
 | opcode | instruction  | step 3 | step 4 | step 5 | step 4 |
-| --- | ---             | ---    | ---    | ---    | ---    |
-| $00 | `nop`           |        |        |        |        | 
-| $01 | `lda` immediate | CE/
+| --- | ---             | --- | --- | --- | --- |
+| $00 | `nop`           | END
+| $01 | `lda` immediate | PCO/MAI | 
 | $02 | `lda` operand X |
 | $03 | `lda` operand Y |
 | $04 | `lda` absolute  |
