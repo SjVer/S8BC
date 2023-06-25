@@ -92,52 +92,52 @@ Step 1 is always `PCO,MAI,MEO,IRI;PCE`.
 | $19 | `tsx`           | SRO,XRI
 | $1A | `txs`           | XRO,SRI
 | $1B | `psh` immediate | 
-| $1C | `psh` implied   | SPO,ADE,ALO,SPI | SPA,MAI,ARO,MEI
-| $1D | `psh` operand X | SPO,ADE,ALO,SPI | SPA,MAI,XRO,MEI
-| $1E | `psh` operand Y | SPO,ADE,ALO,SPI | SPA,MAI,YRO,MEI
+| $1C | `psh` implied   | SPO,ADE | ALO,SPI | SPA,MAI,ARO,MEI
+| $1D | `psh` operand X | SPO,ADE | ALO,SPI | SPA,MAI,XRO,MEI
+| $1E | `psh` operand Y | SPO,ADE | ALO,SPI | SPA,MAI,YRO,MEI
 | $1F | `pll`           | SPA,MAI,MEI,ARO
-| $20 | `pop` implied   | SPA,MAI,MEI,ARO | SPO,AIN,ALO,SPI
-| $21 | `pop` operand X | SPA,MAI,MEI,XRO | SPO,AIN,ALO,SPI
-| $22 | `pop` operand Y | SPA,MAI,MEI,YRO | SPO,AIN,ALO,SPI
-| $23 | `and` immediate | PCO,MAI,MEO,AAN,ALO,ARI;PCE
-| $24 | `and` operand X | XRO,AAN,ALO,ARI
-| $25 | `and` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AAN,ALO,ARI
-| $26 | `ior` immediate | PCO,MAI,MEO,AIO,ALO,ARI;PCE
-| $27 | `ior` operand X | XRO,AIO,ALO,ARI
-| $28 | `ior` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AIO,ALO,ARI
-| $29 | `xor` immediate | PCO,MAI,MEO,AXO,ALO,ARI;PCE
-| $2A | `xor` operand X | XRO,AXO,ALO,ARI
-| $2B | `xor` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AXO,ALO,ARI
-| $2C | `shl` immediate | PCO,MAI,MEO,ASL,ALO,ARI;PCE
-| $2D | `shl` operand X | XRO,ASL,ALO,ARI
-| $2E | `shl` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ASL,ALO,ARI
-| $2F | `shr` immediate | PCO,MAI,MEO,ASR,ALO,ARI;PCE
-| $30 | `shr` operand X | XRO,ASR,ALO,ARI
-| $31 | `shr` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ASR,ALO,ARI
-| $32 | `not` implied   | ARO,ANO,ALO,ARI
-| $33 | `not` operand X | XRO,ANO,ALO,XRI
-| $34 | `not` operand Y | YRO,ANO,ALO,YRI
-| $35 | `not` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ANO,ALO,MEI
-| $36 | `add` immediate | PCO,MAI,MEO,AAD,ALO,ARI;PCE
-| $37 | `add` operand X | XRO,AAD,ALO,ARI
-| $38 | `add` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AAD,ALO,ARI
-| $39 | `sub` immediate | PCO,MAI,MEO,ASU,ALO,ARI;PCE
-| $3A | `sub` operand X | XRO,ASU,ALO,ARI
-| $3B | `sub` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ASU,ALO,ARI
-| $3C | `mul` immediate | PCO,MAI,MEO,AMU,ALO,ARI;PCE
-| $3D | `mul` operand X | XRO,AMU,ALO,ARI
-| $3E | `mul` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AMU,ALO,ARI
-| $3F | `div` immediate | PCO,MAI,MEO,ADI,ALO,ARI;PCE
-| $40 | `div` operand X | XRO,ADI,ALO,ARI
-| $41 | `div` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ADI,ALO,ARI
-| $42 | `inc` implied   | ARO,AIN,ALO,ARI
-| $43 | `inc` operand X | XRO,AIN,ALO,XRI
-| $44 | `inc` operand Y | YRO,AIN,ALO,YRI
-| $45 | `inc` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AIN,ALO,MEI
-| $46 | `dec` implied   | ARO,ADE,ALO,ARI
-| $47 | `dec` operand X | XRO,ADE,ALO,XRI
-| $48 | `dec` operand Y | YRO,ADE,ALO,YRI
-| $49 | `dec` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ADE,ALO,MEI
+| $20 | `pop` implied   | SPA,MAI,MEI,ARO | SPO,AIN | ALO,SPI
+| $21 | `pop` operand X | SPA,MAI,MEI,XRO | SPO,AIN | ALO,SPI
+| $22 | `pop` operand Y | SPA,MAI,MEI,YRO | SPO,AIN | ALO,SPI
+| $23 | `and` immediate | PCO,MAI,MEO,AAN | ALO,ARI;PCE
+| $24 | `and` operand X | XRO,AAN | ALO,ARI
+| $25 | `and` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AAN | ALO,ARI
+| $26 | `ior` immediate | PCO,MAI,MEO,AIO | ALO,ARI;PCE
+| $27 | `ior` operand X | XRO,AIO | ALO,ARI
+| $28 | `ior` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AIO | ALO,ARI
+| $29 | `xor` immediate | PCO,MAI,MEO,AXO | ALO,ARI;PCE
+| $2A | `xor` operand X | XRO,AXO | ALO,ARI
+| $2B | `xor` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AXO | ALO,ARI
+| $2C | `shl` immediate | PCO,MAI,MEO,ASL | ALO,ARI;PCE
+| $2D | `shl` operand X | XRO,ASL | ALO,ARI
+| $2E | `shl` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ASL | ALO,ARI
+| $2F | `shr` immediate | PCO,MAI,MEO,ASR | ALO,ARI;PCE
+| $30 | `shr` operand X | XRO,ASR | ALO,ARI
+| $31 | `shr` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ASR | ALO,ARI
+| $32 | `not` implied   | ARO,ANO | ALO,ARI
+| $33 | `not` operand X | XRO,ANO | ALO,XRI
+| $34 | `not` operand Y | YRO,ANO | ALO,YRI
+| $35 | `not` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ANO | ALO,MEI
+| $36 | `add` immediate | PCO,MAI,MEO,AAD | ALO,ARI;PCE
+| $37 | `add` operand X | XRO,AAD | ALO,ARI
+| $38 | `add` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AAD | ALO,ARI
+| $39 | `sub` immediate | PCO,MAI,MEO,ASU | ALO,ARI;PCE
+| $3A | `sub` operand X | XRO,ASU | ALO,ARI
+| $3B | `sub` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ASU | ALO,ARI
+| $3C | `mul` immediate | PCO,MAI,MEO,AMU | ALO,ARI;PCE
+| $3D | `mul` operand X | XRO,AMU | ALO,ARI
+| $3E | `mul` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AMU | ALO,ARI
+| $3F | `div` immediate | PCO,MAI,MEO,ADI | ALO,ARI;PCE
+| $40 | `div` operand X | XRO,ADI | ALO,ARI
+| $41 | `div` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ADI | ALO,ARI
+| $42 | `inc` implied   | ARO,AIN | ALO,ARI
+| $43 | `inc` operand X | XRO,AIN | ALO,XRI
+| $44 | `inc` operand Y | YRO,AIN | ALO,YRI
+| $45 | `inc` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AIN | ALO,MEI
+| $46 | `dec` implied   | ARO,ADE | ALO,ARI
+| $47 | `dec` operand X | XRO,ADE | ALO,XRI
+| $48 | `dec` operand Y | YRO,ADE | ALO,YRI
+| $49 | `dec` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ADE | ALO,MEI
 | $4A | `cmp` immediate | PCO,MAI,MEO,ACM,SCF;PCE
 | $4B | `cmp` operand X | XRO,ACM,SCF
 | $4C | `cmp` operand Y | YRO,ACM,SCF
