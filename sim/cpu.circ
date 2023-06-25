@@ -197,11 +197,11 @@
       <a name="label" val="Reset"/>
       <a name="labelfont" val="SansSerif bold 12"/>
     </comp>
-    <comp lib="8" loc="(1208,206)" name="Text">
+    <comp lib="8" loc="(1205,205)" name="Text">
       <a name="font" val="Courier 10 Pitch plain 16"/>
       <a name="text" val="CONTROL SIGNAL DECODER"/>
     </comp>
-    <comp lib="8" loc="(986,184)" name="Text">
+    <comp lib="8" loc="(985,180)" name="Text">
       <a name="font" val="Courier 10 Pitch plain 12"/>
       <a name="text" val="Opcode"/>
     </comp>
@@ -403,25 +403,6 @@
       <a name="width" val="8"/>
     </comp>
     <comp lib="0" loc="(480,590)" name="Splitter">
-      <a name="appear" val="center"/>
-      <a name="bit1" val="0"/>
-      <a name="bit10" val="0"/>
-      <a name="bit11" val="0"/>
-      <a name="bit12" val="0"/>
-      <a name="bit13" val="0"/>
-      <a name="bit14" val="0"/>
-      <a name="bit15" val="1"/>
-      <a name="bit2" val="0"/>
-      <a name="bit3" val="0"/>
-      <a name="bit4" val="0"/>
-      <a name="bit5" val="0"/>
-      <a name="bit6" val="0"/>
-      <a name="bit7" val="0"/>
-      <a name="bit8" val="0"/>
-      <a name="bit9" val="0"/>
-      <a name="incoming" val="16"/>
-    </comp>
-    <comp lib="0" loc="(480,590)" name="Splitter">
       <a name="bit1" val="0"/>
       <a name="bit10" val="1"/>
       <a name="bit11" val="1"/>
@@ -440,6 +421,25 @@
       <a name="facing" val="west"/>
       <a name="incoming" val="16"/>
       <a name="spacing" val="3"/>
+    </comp>
+    <comp lib="0" loc="(480,590)" name="Splitter">
+      <a name="appear" val="center"/>
+      <a name="bit1" val="0"/>
+      <a name="bit10" val="0"/>
+      <a name="bit11" val="0"/>
+      <a name="bit12" val="0"/>
+      <a name="bit13" val="0"/>
+      <a name="bit14" val="0"/>
+      <a name="bit15" val="1"/>
+      <a name="bit2" val="0"/>
+      <a name="bit3" val="0"/>
+      <a name="bit4" val="0"/>
+      <a name="bit5" val="0"/>
+      <a name="bit6" val="0"/>
+      <a name="bit7" val="0"/>
+      <a name="bit8" val="0"/>
+      <a name="bit9" val="0"/>
+      <a name="incoming" val="16"/>
     </comp>
     <comp lib="0" loc="(620,500)" name="Constant"/>
     <comp lib="0" loc="(950,590)" name="Pin">
@@ -533,8 +533,8 @@
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="12" text-anchor="end" x="164" y="134">ADLO</text>
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="12" text-anchor="end" x="164" y="144">ADHO</text>
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="18" text-anchor="start" x="105" y="88">PC</text>
-      <visible-counter height="20" path="/Counter(590,290)" stroke-width="0" value-font-family="Monospaced" value-font-size="20" width="53" x="89" y="95"/>
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="12" text-anchor="start" x="65" y="94">WE</text>
+      <visible-counter height="20" path="/Counter(590,290)" stroke-width="0" value-font-family="Monospaced" value-font-size="20" width="53" x="89" y="95"/>
       <circ-anchor facing="east" x="170" y="110"/>
       <circ-port dir="in" pin="520,280" x="60" y="60"/>
       <circ-port dir="in" pin="520,310" x="60" y="90"/>
@@ -1918,8 +1918,8 @@
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="12" text-anchor="start" x="69" y="135">Clk</text>
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="12" text-anchor="middle" x="110" y="135">Rst</text>
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="12" text-anchor="end" x="135" y="74">DO</text>
-      <visible-register height="16" path="/Register(570,250)" stroke-width="0" value-font-family="Monospaced" value-font-size="16" width="21" x="90" y="101"/>
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="18" text-anchor="middle" x="100" y="95">IR</text>
+      <visible-register height="16" path="/Register(570,250)" stroke-width="0" value-font-family="Monospaced" value-font-size="16" width="21" x="90" y="101"/>
       <circ-anchor facing="east" x="140" y="70"/>
       <circ-port dir="in" pin="520,360" x="60" y="90"/>
       <circ-port dir="in" pin="530,280" x="60" y="70"/>
@@ -2082,11 +2082,11 @@
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="12" text-anchor="start" x="69" y="135">Clk</text>
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="12" text-anchor="start" x="65" y="94">WE</text>
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="12" text-anchor="middle" x="110" y="135">Rst</text>
-      <visible-register height="16" path="/Register(570,250)" stroke-width="0" value-font-family="Monospaced" value-font-size="16" width="21" x="90" y="101"/>
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="18" text-anchor="middle" x="100" y="95">SP</text>
       <rect fill="none" height="80" stroke="#000000" stroke-width="2" width="80" x="60" y="60"/>
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="12" text-anchor="end" x="135" y="74">DO</text>
       <text dominant-baseline="alphabetic" font-family="Courier 10 Pitch" font-size="12" text-anchor="end" x="135" y="94">OE</text>
+      <visible-register height="16" path="/Register(570,250)" stroke-width="0" value-font-family="Monospaced" value-font-size="16" width="21" x="90" y="101"/>
       <circ-anchor facing="east" x="140" y="70"/>
       <circ-port dir="in" pin="520,360" x="60" y="90"/>
       <circ-port dir="in" pin="530,280" x="60" y="70"/>

@@ -9,6 +9,8 @@
 |  | PCI | PC in from LB and HB |
 |  | PCO | PC out to LB and HB |
 | <!-- --> | <!-- --> | <!-- --> |
+|  | MLI | MA low in from DB |
+|  | MHI | MA high in from DB |
 |  | MAI | MA in from LB and HB |
 |  | MEI | memory in from DB |
 |  | MEO | memory out to DB |
@@ -52,8 +54,6 @@
 |  | LFO | lesser flag out to JE |
 |  | GFO | greater flag out to JE |
 |  | IFO | interrupt flag out to JE |
-| <!-- --> | <!-- --> | <!-- --> |
-|  | END | end instruction |
 
 # Instruction Steps
 
@@ -63,17 +63,17 @@
 
 | opcode | instruction  | step 3 | step 4 | step 5 | step 4 |
 | --- | ---             | --- | --- | --- | --- |
-| $00 | `nop`           | END
-| $01 | `lda` immediate | PCO/MAI | 
-| $02 | `lda` operand X |
-| $03 | `lda` operand Y |
-| $04 | `lda` absolute  |
-| $05 | `ldx` immediate |
-| $06 | `ldx` operand Y |
-| $07 | `ldx` absolute  |
-| $08 | `ldy` immediate |
-| $09 | `ldy` operand X |
-| $0A | `ldy` absolute  |
+| $00 | `nop`           |
+| $01 | `lda` immediate | PCO/MAI | PCE/MEO/ARI
+| $02 | `lda` operand X | XRO/MLI | MEO/ARI
+| $03 | `lda` operand Y | YRO/MLI | MEO/ARI
+| $04 | `lda` absolute  | PCO/MLI | PCE | PCO/MHI | PCE/MEO/ARI
+| $05 | `ldx` immediate | PCO/MAI | PCE/MEO/XRI
+| $06 | `ldx` operand Y | YRO/MLI | MEO/XRI
+| $07 | `ldx` absolute  | PCO/MLI | PCE | PCO/MHI | PCE/MEO/XRI
+| $08 | `ldy` immediate | PCO/MAI | PCE/MEO/YRI
+| $09 | `ldy` operand X | XRO/MLI | MEO/YRI
+| $0A | `ldy` absolute  | PCO/MLI | PCE | PCO/MHI | PCE/MEO/YRI
 | $0B | `ldi` absolute  |
 | $0C | `sta` operand X |
 | $0D | `sta` operand Y |
