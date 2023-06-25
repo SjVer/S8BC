@@ -4,11 +4,11 @@
 | --- | --- | --- | --- |
 |  | CLB | connect DB and LB |
 |  | CHB | connect DB and HB |
-| <!-- --> | <!-- --> | <!-- --> |
+| <!-- --> |
 |  | PCE | enable PC | F
 |  | PCI | PC in from LB and HB | R
 |  | PCO | PC out to LB and HB | R
-| <!-- --> | <!-- --> | <!-- --> |
+| <!-- --> |
 |  | ADI | address in from LB and HB | R
 |  | ADO | address out to LB and HB | R
 |  | ALI | address low in from DB | R
@@ -16,19 +16,19 @@
 |  | MAI | memory address in from LB and HB | R
 |  | MEI | memory in from DB | R
 |  | MEO | memory out to DB | R
-| <!-- --> | <!-- --> | <!-- --> |
+| <!-- --> |
 |  | SPI | SP in from DB | R
 |  | SPO | SP out to DB | R
 |  | SPA | SP out to LB and HB | R
 |  | IRI | IR in from DB | R
-| <!-- --> | <!-- --> | <!-- --> |
+| <!-- --> |
 |  | ARI | A in from DB | R
 |  | ARO | A out to DB | R
 |  | XRI | X in from DB | R
 |  | XRO | X out to DB | R
 |  | YRI | Y in from DB | R
 |  | XRO | Y out to DB | R
-| <!-- --> | <!-- --> | <!-- --> |
+| <!-- --> |
 |  | AAD | ALU add | R
 |  | ASU | ALU subtract | R
 |  | AMU | ALU multiply | R
@@ -43,7 +43,7 @@
 |  | ADE | ALU decrement | R
 |  | ACM | ALU compare | R
 |  | ALO | ALU out to DB | R
-| <!-- --> | <!-- --> | <!-- --> |
+| <!-- --> |
 |  | SRI | SR in from DB | R
 |  | SRO | SR out to DB | R
 |  | SRF | set result flags | R
@@ -65,6 +65,7 @@ Step 1 is always `PCO,MAI,MEO,IRI;PCE`.
 | opcode | instruction  | step 2 | step 3 | step 4 |
 | --- | ---             | --- | --- | --- |
 | $00 | `nop`           |
+| <!-- --> |
 | $01 | `lda` immediate | PCO,MAI,MEO,ARI;PCE
 | $02 | `lda` operand X | PCO,ADI | XRO,ALI | ADO,MAI,MEO,ARI
 | $03 | `lda` operand Y | PCO,ADI | YRO,ALI | ADO,MAI,MEO,ARI
@@ -82,6 +83,7 @@ Step 1 is always `PCO,MAI,MEO,IRI;PCE`.
 | $0F | `stx` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,XRO,MEI
 | $10 | `sty` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,YRO,MEI
 | $11 | `sti` absolute  |
+| <!-- --> |
 | $12 | `tax`           | ARO,XRI
 | $13 | `tay`           | ARO,YRI
 | $14 | `txa`           | XRO,ARI
@@ -91,6 +93,7 @@ Step 1 is always `PCO,MAI,MEO,IRI;PCE`.
 | $18 | `sxy`           |
 | $19 | `tsx`           | SRO,XRI
 | $1A | `txs`           | XRO,SRI
+| <!-- --> |
 | $1B | `psh` immediate | 
 | $1C | `psh` implied   | SPO,ADE | ALO,SPI | SPA,MAI,ARO,MEI
 | $1D | `psh` operand X | SPO,ADE | ALO,SPI | SPA,MAI,XRO,MEI
@@ -99,6 +102,7 @@ Step 1 is always `PCO,MAI,MEO,IRI;PCE`.
 | $20 | `pop` implied   | SPA,MAI,MEI,ARO | SPO,AIN | ALO,SPI
 | $21 | `pop` operand X | SPA,MAI,MEI,XRO | SPO,AIN | ALO,SPI
 | $22 | `pop` operand Y | SPA,MAI,MEI,YRO | SPO,AIN | ALO,SPI
+| <!-- --> |
 | $23 | `and` immediate | PCO,MAI,MEO,AAN | ALO,ARI;PCE
 | $24 | `and` operand X | XRO,AAN | ALO,ARI
 | $25 | `and` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AAN | ALO,ARI
@@ -118,6 +122,7 @@ Step 1 is always `PCO,MAI,MEO,IRI;PCE`.
 | $33 | `not` operand X | XRO,ANO | ALO,XRI
 | $34 | `not` operand Y | YRO,ANO | ALO,YRI
 | $35 | `not` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ANO | ALO,MEI
+| <!-- --> |
 | $36 | `add` immediate | PCO,MAI,MEO,AAD | ALO,ARI;PCE
 | $37 | `add` operand X | XRO,AAD | ALO,ARI
 | $38 | `add` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AAD | ALO,ARI
@@ -142,6 +147,7 @@ Step 1 is always `PCO,MAI,MEO,IRI;PCE`.
 | $4B | `cmp` operand X | XRO,ACM,SCF
 | $4C | `cmp` operand Y | YRO,ACM,SCF
 | $4D | `cmp` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ACM,SCF
+| <!-- --> |
 | $4E | `jmp`           | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,PCI
 | $4F | `jzs`           |
 | $50 | `jzn`           |
