@@ -57,6 +57,8 @@
 |  | LFO | lesser flag out to JE | R
 |  | GFO | greater flag out to JE | R
 |  | IFO | interrupt flag out to JE | R
+|  | HJE | output high to JE | R
+|  | IJE | invert JE |
 
 # Instruction Steps
 
@@ -148,16 +150,16 @@ Step 1 is always `PCO,MAI,MEO,IRI;PCE`.
 | $4C | `cmp` operand Y | YRO,ACM,SCF
 | $4D | `cmp` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,ACM,SCF
 | <!-- --> |
-| $4E | `jmp`           | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,PCI
-| $4F | `jzs`           |
-| $50 | `jzn`           |
-| $51 | `jcs`           |
+| $4E | `jmp`           | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,HJE,PCI
+| $4F | `jzs`           | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,ZFO,PCI
+| $50 | `jzn`           | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,ZFO,IJE,PCI
+| $51 | `jcs`           | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,CFO,PCI
 | $52 | `jcn`           |
-| $53 | `jes`           |
+| $53 | `jes`           | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,EFO,PCI
 | $54 | `jen`           |
-| $55 | `jls`           |
+| $55 | `jls`           | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,LFO,PCI
 | $56 | `jln`           |
-| $57 | `jgs`           |
+| $57 | `jgs`           | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,GFO,PCI
 | $58 | `jgn`           |
 | $59 | `cll`           |
 | $5A | `ret`           |
