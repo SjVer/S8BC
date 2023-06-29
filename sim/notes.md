@@ -62,8 +62,8 @@
 
 Step 1 is always `PCO,MAI,MEO,IRI;PCE`.
 
-| opcode | instruction  | step 2 | step 3 | step 4 |
-| --- | ---             | --- | --- | --- |
+| opcode | instruction  | step 2 | step 3 | step 4 | step 5 |
+| --- | ---             | --- | --- | --- | --- |
 | $00 | `nop`           |
 | <!-- --> |
 | $01 | `lda` immediate | PCO,MAI,MEO,ARI;PCE
@@ -105,7 +105,10 @@ Step 1 is always `PCO,MAI,MEO,IRI;PCE`.
 | <!-- --> |
 | $23 | `and` immediate | PCO,MAI,MEO,AAN | ALO,ARI;PCE
 | $24 | `and` operand X | XRO,AAN | ALO,ARI
+
 | $25 | `and` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AAN | ALO,ARI
+| $25 | `and` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AAN | ALO,ARI
+
 | $26 | `ior` immediate | PCO,MAI,MEO,AIO | ALO,ARI;PCE
 | $27 | `ior` operand X | XRO,AIO | ALO,ARI
 | $28 | `ior` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AIO | ALO,ARI
