@@ -105,10 +105,7 @@ Step 1 is always `PCO,MAI,MEO,IRI;PCE`.
 | <!-- --> |
 | $23 | `and` immediate | PCO,MAI,MEO,AAN | ALO,ARI;PCE
 | $24 | `and` operand X | XRO,AAN | ALO,ARI
-
 | $25 | `and` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AAN | ALO,ARI
-| $25 | `and` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AAN | ALO,ARI
-
 | $26 | `ior` immediate | PCO,MAI,MEO,AIO | ALO,ARI;PCE
 | $27 | `ior` operand X | XRO,AIO | ALO,ARI
 | $28 | `ior` absolute  | PCO,MAI,MEO,ALI;PCE | PCO,MAI,MEO,AHI;PCE | ADO,MAI,MEO,AIO | ALO,ARI
