@@ -2,7 +2,9 @@
 
 | bit | name | operation | edge |
 | --- | --- | --- | --- |
-|  |  | 
+|  | MEM/DB | output memory contents to DB
+|  | DB/MEM | write DB to memory | R
+|  | DB/IR | write DB to IR | R
 | <!-- --> |
 |  | PCI | PC increment | F
 |  | PCL/DB | output PC low to DB
