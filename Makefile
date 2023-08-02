@@ -71,8 +71,8 @@ test-as: as
 test-vm: vm
 	$(BINDIR)/vm test/test.rom -v -d
 
-list-products:
-	@echo $(PRODUCTS)
+verilog: makedirs
+	iverilog sim/*.v -o bin/sim
 
 makedirs:
 	@$(MKDIR) -p $(BINDIR)
