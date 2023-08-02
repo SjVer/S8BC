@@ -2,41 +2,41 @@
 
 | bit | name | operation | edge |
 | --- | --- | --- | --- |
-|  | MEM/DB | output memory contents to DB
-|  | DB/MEM | write DB to memory | R
-|  | DB/IR | write DB to IR | R
+|  | `MEM/DB` | output memory contents to DB
+|  | `DB/MEM` | write DB to memory | R
+|  | `DB/IR` | write DB to IR | R
 | <!-- --> |
-|  | PCI | PC increment | F
-|  | PCL/DB | output PC low to DB
-|  | PCH/DB | output PC high to DB
-|  | ABL/PCL | write ABL to PC low | R
-|  | ABH/PCH | write ABH to PC high | R
-|  | PCL/ABL | output PC low to ABL
-|  | PCH/ABH | output PC high to ABH
+|  | `PCI` | PC increment | F
+|  | `PCL/DB` | output PC low to DB
+|  | `PCH/DB` | output PC high to DB
+|  | `ABL/PCL` | write ABL to PC low | R
+|  | `ABH/PCH` | write ABH to PC high | R
+|  | `PCL/ABL` | output PC low to ABL
+|  | `PCH/ABH` | output PC high to ABH
 | <!-- --> |
-|  | DB/ARL | write DB to AR low | R
-|  | DB/ARH | write DB to AR high | R
-|  | ARL/ABL | output AR low to ABL
-|  | ARH/ABH | output AR high to ABH
-|  | ABL/DPL | write ABL to DP low | R
-|  | ABH/DPH | write ABH to DP high | R
+|  | `DB/ARL` | write DB to AR low | R
+|  | `DB/ARH` | write DB to AR high | R
+|  | `ARL/ABL` | output AR low to ABL
+|  | `ARH/ABH` | output AR high to ABH
+|  | `ABL/DPL` | write ABL to DP low | R
+|  | `ABH/DPH` | write ABH to DP high | R
 | <!-- --> |
-|  | DB/SP | write DB to SP | R
-|  | SP/DB | output SP to DB
-|  | SPI | SP increment | F
-|  | SPD | SP decrement | R
+|  | `DB/SP` | write DB to SP | R
+|  | `SP/DB` | output SP to DB
+|  | `SPI` | SP increment | F
+|  | `SPD` | SP decrement | R
 | <!-- --> |
-|  | DB/A | write DB to A | R
-|  | A/DB | output A to DB
-|  | ALU/A | write ALU result to A | R
-|  | A/ALU | output A to ALU left input
-|  | DB/X | write DB to X | R
-|  | X/DB | output X to DB
-|  | DB/Y | write DB to Y | R
-|  | Y/DB | output Y to DB
-|  | DB/R | write DB to R | R
-|  | R/DB | output R to DB
-|  | ALU/R | write ALU result to R | R
+|  | `DB/A` | write DB to A | R
+|  | `A/DB` | output A to DB
+|  | `ALU/A` | write ALU result to A | R
+|  | `A/ALU` | output A to ALU left input
+|  | `DB/X` | write DB to X | R
+|  | `X/DB` | output X to DB
+|  | `DB/Y` | write DB to Y | R
+|  | `Y/DB` | output Y to DB
+|  | `DB/R` | write DB to R | R
+|  | `R/DB` | output R to DB
+|  | `ALU/R` | write ALU result to R | R
 |  |  | 
 
 # Instruction Steps
