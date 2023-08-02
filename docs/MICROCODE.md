@@ -18,8 +18,7 @@
 |  | `DB/ARH` | write DB to AR high | R
 |  | `ARL/ABL` | output AR low to ABL
 |  | `ARH/ABH` | output AR high to ABH
-|  | `ABL/DPL` | write ABL to DP low | R
-|  | `ABH/DPH` | write ABH to DP high | R
+|  | `AB/DP` | write ABL/H to DP | R
 | <!-- --> |
 |  | `DB/SP` | write DB to SP | R
 |  | `SP/DB` | output SP to DB
@@ -41,7 +40,7 @@
 
 # Instruction Steps
 
-Step 1 is always ``.
+Step 1 is always `PCL/ABL, PCH/ABH, AB/DP, MEM/DB, DB/IR; PCI`.
 
 | opcode | instruction  | step | control signals
 | --- | ---             | --- | --- |
