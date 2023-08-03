@@ -64,19 +64,29 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | $05 | `ldx` immediate | 2 | `PC/AB, AB/DP, MEM/DB, DB/X; PCI`
 | $06 | `ldx` operand Y | 2 | `Y/DB, DB/ABL, PCH/ABH, AB/DP`
 |     |                 | 3 | `MEM/DB, DB/X`
-| $07 | `ldx` absolute  | 2 | ``
+| $07 | `ldx` absolute  | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, AB/DP, MEM/DB, DB/X`
 | $08 | `ldy` immediate | 2 | `PC/AB, AB/DP, MEM/DB, DB/Y; PCI`
 | $09 | `ldy` operand X | 2 | `X/DB, DB/ABL, PCH/ABH, AB/DP`
 |     |                 | 3 | `MEM/DB, DB/Y`
-| $0A | `ldy` absolute  | 2 | ``
+| $0A | `ldy` absolute  | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, AB/DP, MEM/DB, DB/Y`
 | $0B | `ldi` absolute  | 2 | ``
 | $0C | `sta` operand X | 2 | `X/DB, DB/ABL, PCH/ABH, AB/DP`
 |     |                 | 3 | `A/DB, DB/MEM`
 | $0D | `sta` operand Y | 2 | `Y/DB, DB/ABL, PCH/ABH, AB/DP`
 |     |                 | 3 | `A/DB, DB/MEM`
-| $0E | `sta` absolute  | 2 | ``
-| $0F | `stx` absolute  | 2 | ``
-| $10 | `sty` absolute  | 2 | ``
+| $0E | `sta` absolute  | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, AB/DP, A/DB, DB/MEM`
+| $0F | `stx` absolute  | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, AB/DP, X/DB, DB/MEM`
+| $10 | `sty` absolute  | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, AB/DP, Y/DB, DB/MEM`
 | $11 | `sti` absolute  | 2 | ``
 | <!-- --> |
 | $12 | `tax`           | 2 | ``
