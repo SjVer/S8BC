@@ -3,9 +3,13 @@
 | bit | name | operation | edge |
 | --- | --- | --- | --- |
 |  | `DB/ABL` | connect DB and ABL
+| <!-- --> |
 |  | `MEM/DB` | output memory contents to DB
 |  | `DB/MEM` | write DB to memory | R
+|  | `AB/DP` | write ABL/H to DP | R
+| <!-- --> |
 |  | `DB/IR` | write DB to IR | R
+| <!-- --> |
 |  | `PCI` | PC increment | F
 |  | `PCL/DB` | output PC low to DB
 |  | `PCH/DB` | output PC high to DB
@@ -14,14 +18,16 @@
 |  | `PCL/ABL` | output PC low to ABL
 |  | `PCH/ABH` | output PC high to ABH
 |  | `PC/AB` | output PC to ABL/H
+| <!-- --> |
 |  | `DB/ARL` | write DB to AR low | R
 |  | `DB/ARH` | write DB to AR high | R
 |  | `AR/AB` | output AR to ABL/H
-|  | `AB/DP` | write ABL/H to DP | R
+| <!-- --> |
 |  | `DB/SP` | write DB to SP | R
 |  | `SP/DB` | output SP to DB
 |  | `SPI` | SP increment | F
 |  | `SPD` | SP decrement | R
+| <!-- --> |
 |  | `DB/A` | write DB to A | R
 |  | `A/DB` | output A to DB
 |  | `ALU/A` | write ALU result to A | R
@@ -33,6 +39,7 @@
 |  | `DB/R` | write DB to R | R
 |  | `R/DB` | output R to DB
 |  | `ALU/R` | write ALU result to R | R
+| <!-- --> |
 |  | `END` | reset step counter | F
 
 # Instruction Steps
@@ -45,24 +52,33 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | opcode | instruction  | step | control signals
 | --- | ---             | --- | --- |
 | $00 | `nop`           | 2 | `0`
+| <!-- --> |
 | $01 | `lda` immediate | 2 | `PC/AB, AB/DP, MEM/DB, DB/A; PCI`
 | $02 | `lda` operand X | 2 | `X/DB, DB/ABL, PCH/ABH, AB/DP`
 |     |                 | 3 | `MEM/DB, DB/A`
-| $03 | `lda` operand Y | 2 | ``
-| $04 | `lda` absolute  | 2 | ``
+| $03 | `lda` operand Y | 2 | `Y/DB, DB/ABL, PCH/ABH, AB/DP`
+|     |                 | 3 | `MEM/DB, DB/A`
+| $04 | `lda` absolute  | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, AB/DP, MEM/DB, DB/A`
 | $05 | `ldx` immediate | 2 | `PC/AB, AB/DP, MEM/DB, DB/X; PCI`
-| $06 | `ldx` operand Y | 2 | ``
+| $06 | `ldx` operand Y | 2 | `Y/DB, DB/ABL, PCH/ABH, AB/DP`
+|     |                 | 3 | `MEM/DB, DB/X`
 | $07 | `ldx` absolute  | 2 | ``
 | $08 | `ldy` immediate | 2 | `PC/AB, AB/DP, MEM/DB, DB/Y; PCI`
-| $09 | `ldy` operand X | 2 | ``
+| $09 | `ldy` operand X | 2 | `X/DB, DB/ABL, PCH/ABH, AB/DP`
+|     |                 | 3 | `MEM/DB, DB/Y`
 | $0A | `ldy` absolute  | 2 | ``
 | $0B | `ldi` absolute  | 2 | ``
-| $0C | `sta` operand X | 2 | ``
-| $0D | `sta` operand Y | 2 | ``
+| $0C | `sta` operand X | 2 | `X/DB, DB/ABL, PCH/ABH, AB/DP`
+|     |                 | 3 | `A/DB, DB/MEM`
+| $0D | `sta` operand Y | 2 | `Y/DB, DB/ABL, PCH/ABH, AB/DP`
+|     |                 | 3 | `A/DB, DB/MEM`
 | $0E | `sta` absolute  | 2 | ``
 | $0F | `stx` absolute  | 2 | ``
 | $10 | `sty` absolute  | 2 | ``
 | $11 | `sti` absolute  | 2 | ``
+| <!-- --> |
 | $12 | `tax`           | 2 | ``
 | $13 | `tay`           | 2 | ``
 | $14 | `txa`           | 2 | ``
@@ -72,6 +88,7 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | $18 | `sxy`           | 2 | ``
 | $19 | `tsx`           | 2 | ``
 | $1A | `txs`           | 2 | ``
+| <!-- --> |
 | $1B | `psh` immediate | 2 | ``
 | $1C | `psh` implied   | 2 | ``
 | $1D | `psh` operand X | 2 | ``
@@ -80,6 +97,7 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | $20 | `pop` implied   | 2 | ``
 | $21 | `pop` operand X | 2 | ``
 | $22 | `pop` operand Y | 2 | ``
+| <!-- --> |
 | $23 | `and` immediate | 2 | ``
 | $24 | `and` operand X | 2 | ``
 | $25 | `and` absolute  | 2 | ``
@@ -99,6 +117,7 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | $33 | `not` operand X | 2 | ``
 | $34 | `not` operand Y | 2 | ``
 | $35 | `not` absolute  | 2 | ``
+| <!-- --> |
 | $36 | `add` immediate | 2 | ``
 | $37 | `add` operand X | 2 | ``
 | $38 | `add` absolute  | 2 | ``
@@ -123,6 +142,7 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | $4B | `cmp` operand X | 2 | ``
 | $4C | `cmp` operand Y | 2 | ``
 | $4D | `cmp` absolute  | 2 | ``
+| <!-- --> |
 | $4E | `jmp`           | 2 | ``
 | $4F | `jzs`           | 2 | ``
 | $50 | `jzn`           | 2 | ``
