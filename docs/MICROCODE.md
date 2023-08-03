@@ -41,6 +41,21 @@
 |  | `R/DB` | output R to DB
 |  | `ALU/R` | write ALU result to R | R
 | <!-- --> |
+|  | `DB/S` | write DB to S | R
+|  | `S/DB` | output S to DB
+|  | `SRF` | set result flags | R
+|  | `SCF` | set comparison flags | R
+|  | `SIF` | set I flag | R
+|  | `CIF` | clear I flag | R
+|  | `SHF` | set H flag | R
+|  | `Z/JE` | output Z to jump-enable
+|  | `C/JE` | output C to jump-enable
+|  | `E/JE` | output E to jump-enable
+|  | `L/JE` | output L to jump-enable
+|  | `G/JE` | output G to jump-enable
+|  | `I/JE` | output I to jump-enable
+|  | `IJE` | invert jump-enable
+| <!-- --> |
 |  | `END` | reset step counter | F
 
 # Instruction Steps
@@ -107,16 +122,19 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | $1A | `txs`           | 2 | `X/DB, DB/SP`
 | <!-- --> |
 | $1B | `psh` immediate | 2 | ``
-| $1C | `psh` implied   | 1 | `..., SPD`
-|     |                 | 2 | `SP/AB, AB/DP, A/DB, DB/MEM`
-| $1D | `psh` operand X | 1 | `..., SPD`
-|     |                 | 2 | `SP/AB, AB/DP, X/DB, DB/MEM`
-| $1E | `psh` operand Y | 1 | `..., SPD`
-|     |                 | 2 | `SP/AB, AB/DP, Y/DB, DB/MEM`
-| $1F | `pll`           | 2 | ``
-| $20 | `pop` implied   | 2 | ``
-| $21 | `pop` operand X | 2 | ``
-| $22 | `pop` operand Y | 2 | ``
+| $1C | `psh` implied   | 2 | `SPD`
+|     |                 | 3 | `SP/AB, AB/DP, A/DB, DB/MEM`
+| $1D | `psh` operand X | 2 | `SPD`
+|     |                 | 3 | `SP/AB, AB/DP, X/DB, DB/MEM`
+| $1E | `psh` operand Y | 2 | `SPD`
+|     |                 | 3 | `SP/AB, AB/DP, Y/DB, DB/MEM`
+| $1F | `pll`           | 2 | `SP/AB, AB/DP, MEM/DB, DB/A`
+| $20 | `pop` implied   | 2 | `SP/AB, AB/DP, MEM/DB, DB/A`
+|     |                 | 3 | `SPI`
+| $21 | `pop` operand X | 2 | `SP/AB, AB/DP, MEM/DB, DB/X`
+|     |                 | 3 | `SPI`
+| $22 | `pop` operand Y | 2 | `SP/AB, AB/DP, MEM/DB, DB/Y`
+|     |                 | 3 | `SPI`
 | <!-- --> |
 | $23 | `and` immediate | 2 | ``
 | $24 | `and` operand X | 2 | ``
@@ -163,19 +181,41 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | $4C | `cmp` operand Y | 2 | ``
 | $4D | `cmp` absolute  | 2 | ``
 | <!-- --> |
-| $4E | `jmp`           | 2 | ``
-| $4F | `jzs`           | 2 | ``
-| $50 | `jzn`           | 2 | ``
-| $51 | `jcs`           | 2 | ``
-| $52 | `jcn`           | 2 | ``
-| $53 | `jes`           | 2 | ``
-| $54 | `jen`           | 2 | ``
-| $55 | `jls`           | 2 | ``
-| $56 | `jln`           | 2 | ``
-| $57 | `jgs`           | 2 | ``
-| $58 | `jgn`           | 2 | ``
+| $4E | `jmp`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH`
+| $4F | `jzs`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, Z/JE`
+| $50 | `jzn`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, Z/JE, IJE`
+| $51 | `jcs`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, C/JE`
+| $52 | `jcn`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, C/JE, IJE`
+| $53 | `jes`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, E/JE`
+| $54 | `jen`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, E/JE, IJE`
+| $55 | `jls`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, L/JE`
+| $56 | `jln`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, L/JE, IJE`
+| $57 | `jgs`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, G/JE`
+| $58 | `jgn`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, G/JE, IJE`
 | $59 | `cll`           | 2 | ``
 | $5A | `ret`           | 2 | ``
 | $5B | `rti`           | 2 | ``
-| $5C | `hlt`           | 2 | ``
+| $5C | `hlt`           | 2 | `SHF`
 
