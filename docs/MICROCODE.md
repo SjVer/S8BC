@@ -60,9 +60,6 @@
 
 # Instruction Steps
 
-A step without control signal (`0`) resets the step counter.
-The step counter also automatically resets after step 4.
-
 Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 
 | opcode | instruction  | step | control signals
@@ -129,12 +126,9 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | $1E | `psh` operand Y | 2 | `SPD`
 |     |                 | 3 | `SP/AB, AB/DP, Y/DB, DB/MEM`
 | $1F | `pll`           | 2 | `SP/AB, AB/DP, MEM/DB, DB/A`
-| $20 | `pop` implied   | 2 | `SP/AB, AB/DP, MEM/DB, DB/A`
-|     |                 | 3 | `SPI`
-| $21 | `pop` operand X | 2 | `SP/AB, AB/DP, MEM/DB, DB/X`
-|     |                 | 3 | `SPI`
-| $22 | `pop` operand Y | 2 | `SP/AB, AB/DP, MEM/DB, DB/Y`
-|     |                 | 3 | `SPI`
+| $20 | `pop` implied   | 2 | `SP/AB, AB/DP, MEM/DB, DB/A; SPI`
+| $21 | `pop` operand X | 2 | `SP/AB, AB/DP, MEM/DB, DB/X; SPI`
+| $22 | `pop` operand Y | 2 | `SP/AB, AB/DP, MEM/DB, DB/Y; SPI`
 | <!-- --> |
 | $23 | `and` immediate | 2 | ``
 | $24 | `and` operand X | 2 | ``
@@ -214,8 +208,18 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | $58 | `jgn`           | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
 |     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
 |     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, G/JE, IJE`
-| $59 | `cll`           | 2 | ``
-| $5A | `ret`           | 2 | ``
-| $5B | `rti`           | 2 | ``
+| $59 | `cll`           | 2 | `SPD`
+|     |                 | 3 | `SP/AB, AB/DP, PCH/DB, DB/MEM, SDP`
+|     |                 | 4 | `SP/AB, AB/DP, PCL/DB, DB/MEM`
+|     |                 | 5 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
+|     |                 | 6 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
+|     |                 | 7 | `AR/AB, ABL/PCL, ABH/PCH`
+| $5A | `ret`           | 2 | `SP/AB, AB/DP, MEM/DB, DB/ARL; SPI`
+|     |                 | 3 | `SP/AB, AB/DP, MEM/DB, DB/ARL; SPI`
+|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH`
+| $5B | `rti`           | 2 | `SP/AB, AB/DP, MEM/DB, DB/S; SPI`
+|     |                 | 3 | `SP/AB, AB/DP, MEM/DB, DB/ARL; SPI`
+|     |                 | 4 | `SP/AB, AB/DP, MEM/DB, DB/ARH; SPI`
+|     |                 | 5 | `AR/AB, ABL/PCL, ABH/PCH`
 | $5C | `hlt`           | 2 | `SHF`
 
