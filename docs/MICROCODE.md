@@ -2,6 +2,7 @@
 
 | bit | name | operation | edge |
 | --- | --- | --- | --- |
+|  | `DB/ABL` | connect DB and ABL
 |  | `MEM/DB` | output memory contents to DB
 |  | `DB/MEM` | write DB to memory | R
 |  | `DB/IR` | write DB to IR | R
@@ -45,7 +46,8 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | --- | ---             | --- | --- |
 | $00 | `nop`           | 2 | `0`
 | $01 | `lda` immediate | 2 | `PC/AB, AB/DP, MEM/DB, DB/A; PCI`
-| $02 | `lda` operand X | 2 | ``
+| $02 | `lda` operand X | 2 | `X/DB, DB/ABL, PCH/ABH, AB/DP`
+|     |                 | 3 | `MEM/DB, DB/A`
 | $03 | `lda` operand Y | 2 | ``
 | $04 | `lda` absolute  | 2 | ``
 | $05 | `ldx` immediate | 2 | `PC/AB, AB/DP, MEM/DB, DB/X; PCI`
