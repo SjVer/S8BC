@@ -25,6 +25,7 @@
 | <!-- --> |
 |  | `DB/SP` | write DB to SP | R
 |  | `SP/DB` | output SP to DB
+|  | `SP/AB` | output SP and $01 to ABL/H
 |  | `SPI` | SP increment | F
 |  | `SPD` | SP decrement | R
 | <!-- --> |
@@ -50,7 +51,7 @@ The step counter also automatically resets after step 4.
 Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 
 | opcode | instruction  | step | control signals
-| --- | --- | --- | --- |
+| --- | ---             | --- | --- |
 | $00 | `nop`           | 2 | `0`
 | <!-- --> |
 | $01 | `lda` immediate | 2 | `PC/AB, AB/DP, MEM/DB, DB/A; PCI`
@@ -61,9 +62,6 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | $04 | `lda` absolute  | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
 |     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
 |     |                 | 4 | `AR/AB, AB/DP, MEM/DB, DB/A`
-
-| | | | |
-| --- | --- | --- | --- |
 | $05 | `ldx` immediate | 2 | `PC/AB, AB/DP, MEM/DB, DB/X; PCI`
 | $06 | `ldx` operand Y | 2 | `Y/DB, DB/ABL, PCH/ABH, AB/DP`
 |     |                 | 3 | `MEM/DB, DB/X`
@@ -92,20 +90,29 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 |     |                 | 4 | `AR/AB, AB/DP, Y/DB, DB/MEM`
 | $11 | `sti` absolute  | 2 | ``
 | <!-- --> |
-| $12 | `tax`           | 2 | ``
-| $13 | `tay`           | 2 | ``
-| $14 | `txa`           | 2 | ``
-| $15 | `tya`           | 2 | ``
-| $16 | `sax`           | 2 | ``
-| $17 | `say`           | 2 | ``
-| $18 | `sxy`           | 2 | ``
-| $19 | `tsx`           | 2 | ``
-| $1A | `txs`           | 2 | ``
+| $12 | `tax`           | 2 | `A/DB, DB/X`
+| $13 | `tay`           | 2 | `A/DB, DB/Y`
+| $14 | `txa`           | 2 | `X/DB, DB/A`
+| $15 | `tya`           | 2 | `Y/DB, DB/A`
+| $16 | `sax`           | 2 | `A/DB, DB/R`
+|     |                 | 3 | `X/DB, DB/A`
+|     |                 | 4 | `R/DB, DB/X`
+| $17 | `say`           | 2 | `A/DB, DB/R`
+|     |                 | 3 | `Y/DB, DB/A`
+|     |                 | 4 | `R/DB, DB/Y`
+| $18 | `sxy`           | 2 | `X/DB, DB/R`
+|     |                 | 3 | `Y/DB, DB/X`
+|     |                 | 4 | `R/DB, DB/Y`
+| $19 | `tsx`           | 2 | `SP/DB, DB/X`
+| $1A | `txs`           | 2 | `X/DB, DB/SP`
 | <!-- --> |
 | $1B | `psh` immediate | 2 | ``
-| $1C | `psh` implied   | 2 | ``
-| $1D | `psh` operand X | 2 | ``
-| $1E | `psh` operand Y | 2 | ``
+| $1C | `psh` implied   | 1 | `..., SPD`
+|     |                 | 2 | `SP/AB, AB/DP, A/DB, DB/MEM`
+| $1D | `psh` operand X | 1 | `..., SPD`
+|     |                 | 2 | `SP/AB, AB/DP, X/DB, DB/MEM`
+| $1E | `psh` operand Y | 1 | `..., SPD`
+|     |                 | 2 | `SP/AB, AB/DP, Y/DB, DB/MEM`
 | $1F | `pll`           | 2 | ``
 | $20 | `pop` implied   | 2 | ``
 | $21 | `pop` operand X | 2 | ``
