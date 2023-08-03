@@ -50,7 +50,7 @@ The step counter also automatically resets after step 4.
 Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 
 | opcode | instruction  | step | control signals
-| --- | ---             | --- | --- |
+| --- | --- | --- | --- |
 | $00 | `nop`           | 2 | `0`
 | <!-- --> |
 | $01 | `lda` immediate | 2 | `PC/AB, AB/DP, MEM/DB, DB/A; PCI`
@@ -61,6 +61,9 @@ Step 1 is always `PC/AB, AB/DP, MEM/DB, DB/IR; PCI`.
 | $04 | `lda` absolute  | 2 | `PC/AB, AB/DP, MEM/DB, DB/ARL; PCI`
 |     |                 | 3 | `PC/AB, AB/DP, MEM/DB, DB/ARH; PCI`
 |     |                 | 4 | `AR/AB, AB/DP, MEM/DB, DB/A`
+
+| | | | |
+| --- | --- | --- | --- |
 | $05 | `ldx` immediate | 2 | `PC/AB, AB/DP, MEM/DB, DB/X; PCI`
 | $06 | `ldx` operand Y | 2 | `Y/DB, DB/ABL, PCH/ABH, AB/DP`
 |     |                 | 3 | `MEM/DB, DB/X`
