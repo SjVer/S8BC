@@ -78,12 +78,7 @@ const char* string_of_ins(instruction ins) {
 
 static void log_instr_node(word a, instr_node* n) {
     if (n->arg_type) {
-        if (n->arg_type == TOK_REGISTER_X)
-            Log("$%04x: %s x", a, string_of_ins(n->instr));
-        else if (n->arg_type == TOK_REGISTER_Y)
-            Log("$%04x: %s y", a, string_of_ins(n->instr));
-
-        else if (n->arg_type == TOK_IMM_IDENTIFIER)
+        if (n->arg_type == TOK_IMM_IDENTIFIER)
             Log("$%04x: %s #%s", a,
                 string_of_ins(n->instr),
                 n->as.ident);
@@ -91,6 +86,15 @@ static void log_instr_node(word a, instr_node* n) {
             Log("$%04x: %s #$%02x", a,
                 string_of_ins(n->instr),
                 n->as.imm_literal);
+
+        else if (n->arg_type == TOK_REGISTER_X)
+            Log("$%04x: %s x", a, string_of_ins(n->instr));
+        else if (n->arg_type == TOK_REGISTER_Y)
+            Log("$%04x: %s y", a, string_of_ins(n->instr));
+        else if (n->arg_type == TOK_REL_LITERAL)
+            Log("$%04x: %s @%d", a, 
+                string_of_ins(n->instr),
+                n->as.rel_literal);
 
         else if (n->arg_type == TOK_ABS_IDENTIFIER)
             Log("$%04x: %s %s", a,

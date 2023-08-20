@@ -9,6 +9,7 @@
 
 #define Addr_x(cpu) (((cpu)->pc & 0xff00) | (cpu)->x)
 #define Addr_y(cpu) (((cpu)->pc & 0xff00) | (cpu)->y)
+#define Addr_s(cpu, offset) (STACK_START | (cpu)->sp + (offset))
 
 #define Fetch(cpu) (cpu->memory[cpu->pc++])
 #define Fetch_word(cpu) (Fetch(cpu) | Fetch(cpu) << 8)
@@ -43,7 +44,7 @@ void reset_cpu(cpu* cpu) {
     cpu->a = 0;
     cpu->x = 0;
     cpu->y = 0;
-    cpu->sp = STACK_END & 0xff;
+    cpu->sp = 0; // first push causes overflow to 0xff
     cpu->pc = 0;
     cpu->status = 0;
 }
@@ -77,7 +78,8 @@ static void set_flags_by_comparison(cpu* cpu, byte operand) {
 }
 
 static void push_to_stack(cpu* cpu, byte value) {
-    write_to_memory(cpu, STACK_START | --cpu->sp, value);
+    cpu->sp--;
+    write_to_memory(cpu, STACK_START | cpu->sp, value);
 }
 
 static byte pop_from_stack(cpu* cpu) {
@@ -148,6 +150,10 @@ static void execute_instr(cpu* cpu) {
             cpu->a = cpu->memory[Addr_y(cpu)];
             set_flags_by_result(cpu, cpu->a);
             break;
+        case OP_LDA_STK:
+            cpu->a = cpu->memory[Addr_s(cpu, Fetch(cpu))];
+            set_flags_by_result(cpu, cpu->a);
+            break;
         case OP_LDA_ABS:
             cpu->a = Byte_at_fetch(cpu);
             set_flags_by_result(cpu, cpu->a);
@@ -161,6 +167,10 @@ static void execute_instr(cpu* cpu) {
             cpu->x = cpu->memory[Addr_y(cpu)];
             set_flags_by_result(cpu, cpu->x);
             break;
+        case OP_LDX_STK:
+            cpu->x = cpu->memory[Addr_s(cpu, Fetch(cpu))];
+            set_flags_by_result(cpu, cpu->x);
+            break;
         case OP_LDX_ABS:
             cpu->x = Byte_at_fetch(cpu);
             set_flags_by_result(cpu, cpu->x);
@@ -172,6 +182,10 @@ static void execute_instr(cpu* cpu) {
             break;
         case OP_LDY_OPX:
             cpu->y = cpu->memory[Addr_x(cpu)];
+            set_flags_by_result(cpu, cpu->y);
+            break;
+        case OP_LDY_STK:
+            cpu->y = cpu->memory[Addr_s(cpu, Fetch(cpu))];
             set_flags_by_result(cpu, cpu->y);
             break;
         case OP_LDY_ABS:
@@ -192,6 +206,9 @@ static void execute_instr(cpu* cpu) {
             break;
         case OP_STA_OPY:
             write_to_memory(cpu, Addr_y(cpu), cpu->a);
+            break;
+        case OP_STA_STK:
+            write_to_memory(cpu, Addr_s(cpu, Fetch(cpu)), cpu->a);
             break;
         case OP_STA_ABS:
             Byte_at_fetch(cpu) = cpu->a;

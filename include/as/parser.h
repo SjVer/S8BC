@@ -42,6 +42,7 @@ typedef struct {
 	union {
 		char* ident;
 		byte imm_literal;
+		byte rel_literal;
 		word abs_literal;
 	} as;
 } instr_node;

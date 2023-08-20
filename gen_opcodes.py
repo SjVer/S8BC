@@ -15,6 +15,7 @@ modes = {
     "IMP": "implied",
     "OPX": "operand X",
     "OPY": "operand Y",
+    "STK": "stack",
     "ABS": "absolute",
 }
 

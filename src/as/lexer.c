@@ -170,24 +170,13 @@ static token string() {
     return make_token(TOK_STRING, (token_as){0});
 }
 
-static token number(char first, bool is_immediate) {
-    int base = first == '%' ? 2 : first == '$' ? 16 : 10;
+static long number(char first_char) {
+    int base = first_char == '%' ? 2 : first_char == '$' ? 16 : 10;
     while (is_digit(base, peek())) advance();
 
     // parse the literal
-    int offset = (base != 10) + is_immediate; 
-    long l = strtoul(start + offset, NULL, base);
-
-    if (is_immediate && l > 0xff) {
-        Log_err("immediate literal too large");
-        Abort(STATUS_PARSE_ERROR);
-    } else if (l > 0xffff) {
-        Log_err("literal too large");
-        Abort(STATUS_PARSE_ERROR);
-    }
-
-    token_type type = is_immediate ? TOK_IMM_LITERAL : TOK_ABS_LITERAL;
-    return make_token(type, (token_as){.literal = l});
+    int offset = (base != 10) + is_digit(10, first_char); 
+    return strtoul(start + offset, NULL, base);
 }
 
 static void skip_whitespaces() {
@@ -233,15 +222,44 @@ token scan_next_token() {
     else if (is_alpha(c)) return instruction_or_identifier();
 
     // numbers
-    else if (is_literal_start(c)) return number(c, false);
+    else if (is_literal_start(c)) {
+        long l = number(c);
+        if (l > 0xffff) {
+            Log_err("number too large");
+            Abort(STATUS_PARSE_ERROR);
+        }
+        return make_token(TOK_ABS_LITERAL, (token_as){.literal = l});
+    }
+    else if (c == '@') {
+        char nc = advance();
+        if (!is_literal_start(nc)) {
+            Log_err("expected an offset after '@' at line %d", line);
+            Abort(STATUS_SUCCESS);
+        }
+
+        long l = number(nc);
+        if (l > 0xff) {
+            Log_err("offset too large");
+            Abort(STATUS_PARSE_ERROR);
+        }
+        return make_token(TOK_REL_LITERAL, (token_as){.literal = l});        
+    }
     else if (c == '#') {
         char nc = advance();
 
-        if (is_literal_start(nc)) return number(nc, true);
+        if (is_literal_start(nc)) {
+            long l = number(nc);
+            if (l > 0xff) {
+                Log_err("immediate number too large");
+                Abort(STATUS_PARSE_ERROR);
+            }
+            return make_token(TOK_IMM_LITERAL, (token_as){.literal = l});  
+        }
         else if (is_alpha(nc)) return immediate_identifier();
-
-        Log_err("expected a number or label after '#' at line %d", line);
-        Abort(STATUS_SUCCESS);
+        else {
+            Log_err("expected a number or label after '#' at line %d", line);
+            Abort(STATUS_SUCCESS);
+        }
     }
 
     // strings

@@ -99,7 +99,8 @@ enum {
     OP_IMP = 1 << 1,
     OP_OPX = 1 << 2,
     OP_OPY = 1 << 3,
-    OP_ABS = 1 << 4,
+    OP_STK = 1 << 4,
+    OP_ABS = 1 << 5,
 };
 
 static void parse_operand(instr_node* i, unsigned ops) {
@@ -115,6 +116,8 @@ static void parse_operand(instr_node* i, unsigned ops) {
 
     else if (ops & OP_OPX && match(TOK_REGISTER_X)) return;
     else if (ops & OP_OPY && match(TOK_REGISTER_Y)) return;
+    else if (ops & OP_STK && match(TOK_REL_LITERAL)) 
+        i->as.rel_literal = prev_token.as.literal;
 
     else if (ops & OP_ABS && match(TOK_ABS_LITERAL))
         i->as.abs_literal = prev_token.as.literal;
@@ -141,11 +144,11 @@ static node* parse_instruction() {
         case INS_NOP: Op(OP_NO_OP);
         
         // load/store operations
-        case INS_LDA: Op(OP_IMM | OP_OPX | OP_OPY | OP_ABS);
-        case INS_LDX: Op(OP_IMM | OP_OPY | OP_ABS);
-        case INS_LDY: Op(OP_IMM | OP_OPX | OP_ABS);
+        case INS_LDA: Op(OP_IMM | OP_OPX | OP_OPY | OP_STK | OP_ABS);
+        case INS_LDX: Op(OP_IMM | OP_OPY | OP_STK | OP_ABS);
+        case INS_LDY: Op(OP_IMM | OP_OPX | OP_STK | OP_ABS);
         case INS_LDI: Op(OP_ABS);
-        case INS_STA: Op(OP_OPX | OP_OPY | OP_ABS);
+        case INS_STA: Op(OP_OPX | OP_OPY | OP_STK | OP_ABS);
         case INS_STX:
         case INS_STY:
         case INS_STI: Op(OP_ABS);

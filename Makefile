@@ -1,8 +1,8 @@
 # compiler options
-CC = clang
+CC = clang-15
 MUTE = unused-command-line-argument
 DEFS = COMPILER=\"$(CC)\" APP_VERSION_PATCH=\"$(shell git rev-parse --short HEAD)\"
-CXXFLAGS = -std=c11 -Iinclude -Wall -I/usr/include/SDL2 -lSDL2 -lSDL2_ttf
+CXXFLAGS = -std=c11 -Iinclude -Wall
 LDFLAGS = 
 
 # command options
@@ -66,10 +66,10 @@ $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT) | makedirs
 # ===================== TOOLS =====================
 
 test-as: as
-	$(BINDIR)/as test/test.s -o test/test.rom -v
+	$(BINDIR)/as test/test.s -o bin/test.rom -v
 
 test-vm: vm
-	$(BINDIR)/vm test/test.rom -v -d
+	$(BINDIR)/vm bin/test.rom -vd
 
 verilog: makedirs
 	iverilog sim/*.v -o bin/sim

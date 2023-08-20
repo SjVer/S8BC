@@ -6,93 +6,97 @@
 | $01 | `lda` | immediate |
 | $02 | `lda` | operand X |
 | $03 | `lda` | operand Y |
-| $04 | `lda` | absolute |
-| $05 | `ldx` | immediate |
-| $06 | `ldx` | operand Y |
-| $07 | `ldx` | absolute |
-| $08 | `ldy` | immediate |
-| $09 | `ldy` | operand X |
-| $0A | `ldy` | absolute |
-| $0B | `ldi` | absolute |
-| $0C | `sta` | operand X |
-| $0D | `sta` | operand Y |
-| $0E | `sta` | absolute |
-| $0F | `stx` | absolute |
-| $10 | `sty` | absolute |
-| $11 | `sti` | absolute |
-| $12 | `tax` |  |
-| $13 | `tay` |  |
-| $14 | `txa` |  |
-| $15 | `tya` |  |
-| $16 | `sax` |  |
-| $17 | `say` |  |
-| $18 | `sxy` |  |
-| $19 | `tsx` |  |
-| $1A | `txs` |  |
-| $1B | `psh` | immediate |
-| $1C | `psh` | implied |
-| $1D | `psh` | operand X |
-| $1E | `psh` | operand Y |
-| $1F | `pll` |  |
-| $20 | `pop` | implied |
-| $21 | `pop` | operand X |
-| $22 | `pop` | operand Y |
-| $23 | `and` | immediate |
-| $24 | `and` | operand X |
-| $25 | `and` | absolute |
-| $26 | `ior` | immediate |
-| $27 | `ior` | operand X |
-| $28 | `ior` | absolute |
-| $29 | `xor` | immediate |
-| $2A | `xor` | operand X |
-| $2B | `xor` | absolute |
-| $2C | `shl` | immediate |
-| $2D | `shl` | operand X |
-| $2E | `shl` | absolute |
-| $2F | `shr` | immediate |
-| $30 | `shr` | operand X |
-| $31 | `shr` | absolute |
-| $32 | `not` | implied |
-| $33 | `not` | operand X |
-| $34 | `not` | operand Y |
-| $35 | `not` | absolute |
-| $36 | `add` | immediate |
-| $37 | `add` | operand X |
-| $38 | `add` | absolute |
-| $39 | `sub` | immediate |
-| $3A | `sub` | operand X |
-| $3B | `sub` | absolute |
-| $3C | `mul` | immediate |
-| $3D | `mul` | operand X |
-| $3E | `mul` | absolute |
-| $3F | `div` | immediate |
-| $40 | `div` | operand X |
-| $41 | `div` | absolute |
-| $42 | `inc` | implied |
-| $43 | `inc` | operand X |
-| $44 | `inc` | operand Y |
-| $45 | `inc` | absolute |
-| $46 | `dec` | implied |
-| $47 | `dec` | operand X |
-| $48 | `dec` | operand Y |
-| $49 | `dec` | absolute |
-| $4A | `cmp` | immediate |
-| $4B | `cmp` | operand X |
-| $4C | `cmp` | operand Y |
-| $4D | `cmp` | absolute |
-| $4E | `jmp` |  |
-| $4F | `jzs` |  |
-| $50 | `jzn` |  |
-| $51 | `jcs` |  |
-| $52 | `jcn` |  |
-| $53 | `jes` |  |
-| $54 | `jen` |  |
-| $55 | `jls` |  |
-| $56 | `jln` |  |
-| $57 | `jgs` |  |
-| $58 | `jgn` |  |
-| $59 | `cll` |  |
-| $5A | `ret` |  |
-| $5B | `rti` |  |
-| $5C | `hlt` |  |
+| $04 | `lda` | stack |
+| $05 | `lda` | absolute |
+| $06 | `ldx` | immediate |
+| $07 | `ldx` | operand Y |
+| $08 | `ldx` | stack |
+| $09 | `ldx` | absolute |
+| $0A | `ldy` | immediate |
+| $0B | `ldy` | operand X |
+| $0C | `ldy` | stack |
+| $0D | `ldy` | absolute |
+| $0E | `ldi` | absolute |
+| $0F | `sta` | operand X |
+| $10 | `sta` | operand Y |
+| $11 | `sta` | stack |
+| $12 | `sta` | absolute |
+| $13 | `stx` | absolute |
+| $14 | `sty` | absolute |
+| $15 | `sti` | absolute |
+| $16 | `tax` |  |
+| $17 | `tay` |  |
+| $18 | `txa` |  |
+| $19 | `tya` |  |
+| $1A | `sax` |  |
+| $1B | `say` |  |
+| $1C | `sxy` |  |
+| $1D | `tsx` |  |
+| $1E | `txs` |  |
+| $1F | `psh` | immediate |
+| $20 | `psh` | implied |
+| $21 | `psh` | operand X |
+| $22 | `psh` | operand Y |
+| $23 | `pll` |  |
+| $24 | `pop` | implied |
+| $25 | `pop` | operand X |
+| $26 | `pop` | operand Y |
+| $27 | `and` | immediate |
+| $28 | `and` | operand X |
+| $29 | `and` | absolute |
+| $2A | `ior` | immediate |
+| $2B | `ior` | operand X |
+| $2C | `ior` | absolute |
+| $2D | `xor` | immediate |
+| $2E | `xor` | operand X |
+| $2F | `xor` | absolute |
+| $30 | `shl` | immediate |
+| $31 | `shl` | operand X |
+| $32 | `shl` | absolute |
+| $33 | `shr` | immediate |
+| $34 | `shr` | operand X |
+| $35 | `shr` | absolute |
+| $36 | `not` | implied |
+| $37 | `not` | operand X |
+| $38 | `not` | operand Y |
+| $39 | `not` | absolute |
+| $3A | `add` | immediate |
+| $3B | `add` | operand X |
+| $3C | `add` | absolute |
+| $3D | `sub` | immediate |
+| $3E | `sub` | operand X |
+| $3F | `sub` | absolute |
+| $40 | `mul` | immediate |
+| $41 | `mul` | operand X |
+| $42 | `mul` | absolute |
+| $43 | `div` | immediate |
+| $44 | `div` | operand X |
+| $45 | `div` | absolute |
+| $46 | `inc` | implied |
+| $47 | `inc` | operand X |
+| $48 | `inc` | operand Y |
+| $49 | `inc` | absolute |
+| $4A | `dec` | implied |
+| $4B | `dec` | operand X |
+| $4C | `dec` | operand Y |
+| $4D | `dec` | absolute |
+| $4E | `cmp` | immediate |
+| $4F | `cmp` | operand X |
+| $50 | `cmp` | operand Y |
+| $51 | `cmp` | absolute |
+| $52 | `jmp` |  |
+| $53 | `jzs` |  |
+| $54 | `jzn` |  |
+| $55 | `jcs` |  |
+| $56 | `jcn` |  |
+| $57 | `jes` |  |
+| $58 | `jen` |  |
+| $59 | `jls` |  |
+| $5A | `jln` |  |
+| $5B | `jgs` |  |
+| $5C | `jgn` |  |
+| $5D | `cll` |  |
+| $5E | `ret` |  |
+| $5F | `rti` |  |
+| $60 | `hlt` |  |
 <!-- END OPCODES -->

@@ -25,7 +25,7 @@ static void gen_raw_data(word a, raw_data_node* d) {
 }
 
 static void gen_instr_with_operands(word a, instr_node* i,
-	opcode imm, opcode imp_or_none, opcode opx, opcode opy, opcode abs) {
+	opcode imm, opcode imp, opcode opx, opcode opy, opcode stk, opcode abs) {
 	// assume the parser only generates correct nodes
 
 	// #define Assert_opcode(o) \
@@ -39,8 +39,8 @@ static void gen_instr_with_operands(word a, instr_node* i,
 			break;
 
 		case 0:
-			// Assert_opcode(imp_or_none);
-			*Rel(a) = imp_or_none;
+			// Assert_opcode(imp);
+			*Rel(a) = imp;
 			break;
 
 		case TOK_REGISTER_X:
@@ -51,6 +51,11 @@ static void gen_instr_with_operands(word a, instr_node* i,
 		case TOK_REGISTER_Y:
 			// Assert_opcode(opy);
 			*Rel(a) = opy;
+			break;
+
+		case TOK_REL_LITERAL:
+			*Rel(a) = stk;
+			*Rel(a + 1) = i->as.rel_literal;
 			break;
 
 		case TOK_ABS_LITERAL:
@@ -75,67 +80,67 @@ static void gen_instruction(word a, instr_node* i) {
 #define Op(...)	gen_instr_with_operands(a, i, __VA_ARGS__); break
 
 	switch (i->instr) {
-		case INS_NOP: Op(0, OP_NOP, 0, 0, 0);
+		case INS_NOP: Op(0, OP_NOP, 0, 0, 0, 0);
 
 		// load/store operations
-		case INS_LDA: Op(OP_LDA_IMM, 0, OP_LDA_OPX, OP_LDA_OPY, OP_LDA_ABS);
-		case INS_LDX: Op(OP_LDX_IMM, 0, 0, OP_LDX_OPY, OP_LDX_ABS);
-		case INS_LDY: Op(OP_LDY_IMM, 0, OP_LDY_OPX, 0, OP_LDY_ABS);
-		case INS_LDI: Op(0, 0, 0, 0, OP_STX_ABS);
-		case INS_STA: Op(0, 0, OP_STA_OPX, OP_STA_OPY, OP_STA_ABS);
-		case INS_STX: Op(0, 0, 0, 0, OP_STX_ABS);
-		case INS_STY: Op(0, 0, 0, 0, OP_STY_ABS);
-		case INS_STI: Op(0, 0, 0, 0, OP_STI_ABS);
+		case INS_LDA: Op(OP_LDA_IMM, 0, OP_LDA_OPX, OP_LDA_OPY, OP_LDA_STK, OP_LDA_ABS);
+		case INS_LDX: Op(OP_LDX_IMM, 0, 0, OP_LDX_OPY, OP_LDX_STK, OP_LDX_ABS);
+		case INS_LDY: Op(OP_LDY_IMM, 0, OP_LDY_OPX, 0, OP_LDY_STK, OP_LDY_ABS);
+		case INS_LDI: Op(0, 0, 0, 0, 0, OP_STX_ABS);
+		case INS_STA: Op(0, 0, OP_STA_OPX, OP_STA_OPY, 0, OP_STA_ABS);
+		case INS_STX: Op(0, 0, 0, 0, 0, OP_STX_ABS);
+		case INS_STY: Op(0, 0, 0, 0, 0, OP_STY_ABS);
+		case INS_STI: Op(0, 0, 0, 0, 0, OP_STI_ABS);
 
 		// register operations
-		case INS_TAX: Op(0, OP_TAX, 0, 0, 0);
-		case INS_TAY: Op(0, OP_TAY, 0, 0, 0);
-		case INS_TXA: Op(0, OP_TXA, 0, 0, 0);
-		case INS_TYA: Op(0, OP_TYA, 0, 0, 0);
-		case INS_SAX: Op(0, OP_SAX, 0, 0, 0);
-		case INS_SAY: Op(0, OP_SAY, 0, 0, 0);
-		case INS_SXY: Op(0, OP_SXY, 0, 0, 0);
+		case INS_TAX: Op(0, OP_TAX, 0, 0, 0, 0);
+		case INS_TAY: Op(0, OP_TAY, 0, 0, 0, 0);
+		case INS_TXA: Op(0, OP_TXA, 0, 0, 0, 0);
+		case INS_TYA: Op(0, OP_TYA, 0, 0, 0, 0);
+		case INS_SAX: Op(0, OP_SAX, 0, 0, 0, 0);
+		case INS_SAY: Op(0, OP_SAY, 0, 0, 0, 0);
+		case INS_SXY: Op(0, OP_SXY, 0, 0, 0, 0);
 
 		// stack operations
-		case INS_TSX: Op(0, OP_TSX, 0, 0, 0);
-		case INS_TXS: Op(0, OP_TXS, 0, 0, 0);
-		case INS_PSH: Op(OP_PSH_IMM, OP_PSH_IMP, OP_PSH_OPX, OP_PSH_OPY, 0);
-		case INS_PLL: Op(0, OP_PLL, 0, 0, 0);
-		case INS_POP: Op(0, OP_POP_IMP, OP_POP_OPX, OP_POP_OPY, 0);
+		case INS_TSX: Op(0, OP_TSX, 0, 0, 0, 0);
+		case INS_TXS: Op(0, OP_TXS, 0, 0, 0, 0);
+		case INS_PSH: Op(OP_PSH_IMM, OP_PSH_IMP, OP_PSH_OPX, OP_PSH_OPY, 0, 0);
+		case INS_PLL: Op(0, OP_PLL, 0, 0, 0, 0);
+		case INS_POP: Op(0, OP_POP_IMP, OP_POP_OPX, OP_POP_OPY, 0, 0);
 
 		// bitwise operations
-		case INS_AND: Op(OP_AND_IMM, 0, OP_AND_OPX, 0, OP_AND_ABS);
-		case INS_IOR: Op(OP_IOR_IMM, 0, OP_IOR_OPX, 0, OP_IOR_ABS);
-		case INS_XOR: Op(OP_XOR_IMM, 0, OP_XOR_OPX, 0, OP_XOR_ABS);
-		case INS_SHL: Op(OP_SHL_IMM, 0, OP_SHL_OPX, 0, OP_SHL_ABS);
-		case INS_SHR: Op(OP_SHR_IMM, 0, OP_SHR_OPX, 0, OP_SHR_ABS);
-		case INS_NOT: Op(0, OP_NOT_IMP, OP_NOT_OPX, OP_NOT_OPY, OP_NOT_ABS);
+		case INS_AND: Op(OP_AND_IMM, 0, OP_AND_OPX, 0, 0, OP_AND_ABS);
+		case INS_IOR: Op(OP_IOR_IMM, 0, OP_IOR_OPX, 0, 0, OP_IOR_ABS);
+		case INS_XOR: Op(OP_XOR_IMM, 0, OP_XOR_OPX, 0, 0, OP_XOR_ABS);
+		case INS_SHL: Op(OP_SHL_IMM, 0, OP_SHL_OPX, 0, 0, OP_SHL_ABS);
+		case INS_SHR: Op(OP_SHR_IMM, 0, OP_SHR_OPX, 0, 0, OP_SHR_ABS);
+		case INS_NOT: Op(0, OP_NOT_IMP, OP_NOT_OPX, OP_NOT_OPY, 0, OP_NOT_ABS);
 
 		// numerical operations
-		case INS_ADD: Op(OP_ADD_IMM, 0, OP_ADD_OPX, 0, OP_ADD_ABS);
-		case INS_SUB: Op(OP_SUB_IMM, 0, OP_SUB_OPX, 0, OP_SUB_ABS);
-		case INS_MUL: Op(OP_MUL_IMM, 0, OP_MUL_OPX, 0, OP_MUL_ABS);
-		case INS_DIV: Op(OP_DIV_IMM, 0, OP_DIV_OPX, 0, OP_DIV_ABS);
-		case INS_INC: Op(0, OP_INC_IMP, OP_INC_OPX, OP_INC_OPY, OP_INC_ABS);
-		case INS_DEC: Op(0, OP_DEC_IMP, OP_DEC_OPX, OP_DEC_OPY, OP_DEC_ABS);
-		case INS_CMP: Op(OP_CMP_IMM, 0, OP_CMP_OPX, OP_CMP_OPY, OP_CMP_ABS);
+		case INS_ADD: Op(OP_ADD_IMM, 0, OP_ADD_OPX, 0, 0, OP_ADD_ABS);
+		case INS_SUB: Op(OP_SUB_IMM, 0, OP_SUB_OPX, 0, 0, OP_SUB_ABS);
+		case INS_MUL: Op(OP_MUL_IMM, 0, OP_MUL_OPX, 0, 0, OP_MUL_ABS);
+		case INS_DIV: Op(OP_DIV_IMM, 0, OP_DIV_OPX, 0, 0, OP_DIV_ABS);
+		case INS_INC: Op(0, OP_INC_IMP, OP_INC_OPX, OP_INC_OPY, 0, OP_INC_ABS);
+		case INS_DEC: Op(0, OP_DEC_IMP, OP_DEC_OPX, OP_DEC_OPY, 0, OP_DEC_ABS);
+		case INS_CMP: Op(OP_CMP_IMM, 0, OP_CMP_OPX, OP_CMP_OPY, 0, OP_CMP_ABS);
 
 		// control flow operations
-		case INS_JMP: Op(0, 0, 0, 0, OP_JMP);
-		case INS_JZS: Op(0, 0, 0, 0, OP_JZS);
-		case INS_JZN: Op(0, 0, 0, 0, OP_JZN);
-		case INS_JCS: Op(0, 0, 0, 0, OP_JCS);
-		case INS_JCN: Op(0, 0, 0, 0, OP_JCN);
-		case INS_JES: Op(0, 0, 0, 0, OP_JES);
-		case INS_JEN: Op(0, 0, 0, 0, OP_JEN);
-		case INS_JLS: Op(0, 0, 0, 0, OP_JLS);
-		case INS_JLN: Op(0, 0, 0, 0, OP_JLN);
-		case INS_JGS: Op(0, 0, 0, 0, OP_JGS);
-		case INS_JGN: Op(0, 0, 0, 0, OP_JGN);
-		case INS_CLL: Op(0, 0, 0, 0, OP_CLL);
-		case INS_RET: Op(0, OP_RET, 0, 0, 0);
-		case INS_RTI: Op(0, OP_RTI, 0, 0, 0);
-		case INS_HLT: Op(0, OP_HLT, 0, 0, 0);
+		case INS_JMP: Op(0, 0, 0, 0, 0, OP_JMP);
+		case INS_JZS: Op(0, 0, 0, 0, 0, OP_JZS);
+		case INS_JZN: Op(0, 0, 0, 0, 0, OP_JZN);
+		case INS_JCS: Op(0, 0, 0, 0, 0, OP_JCS);
+		case INS_JCN: Op(0, 0, 0, 0, 0, OP_JCN);
+		case INS_JES: Op(0, 0, 0, 0, 0, OP_JES);
+		case INS_JEN: Op(0, 0, 0, 0, 0, OP_JEN);
+		case INS_JLS: Op(0, 0, 0, 0, 0, OP_JLS);
+		case INS_JLN: Op(0, 0, 0, 0, 0, OP_JLN);
+		case INS_JGS: Op(0, 0, 0, 0, 0, OP_JGS);
+		case INS_JGN: Op(0, 0, 0, 0, 0, OP_JGN);
+		case INS_CLL: Op(0, 0, 0, 0, 0, OP_CLL);
+		case INS_RET: Op(0, OP_RET, 0, 0, 0, 0);
+		case INS_RTI: Op(0, OP_RTI, 0, 0, 0, 0);
+		case INS_HLT: Op(0, OP_HLT, 0, 0, 0, 0);
 	}
 
 #undef Op

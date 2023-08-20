@@ -67,6 +67,8 @@ static void add_labels_in_node(node* n) {
         if (i.arg_type == TOK_IMM_IDENTIFIER
             || i.arg_type == TOK_IMM_LITERAL)
             incr_curr_addr(1);
+        else if (i.arg_type == TOK_REL_LITERAL)
+            incr_curr_addr(1);
         else if (i.arg_type == TOK_ABS_IDENTIFIER
             || i.arg_type == TOK_ABS_LITERAL)
             incr_curr_addr(2);
@@ -123,6 +125,7 @@ static void solve_node_address(node* n) {
             // i->as.imm_literal = (byte)(addr & 0xff);
             i->as.imm_literal = (byte)(addr & 0xff);
         }
+        else if (i->arg_type == TOK_REL_LITERAL) incr_curr_addr(1);
         else if (i->arg_type == TOK_ABS_LITERAL) incr_curr_addr(2);
         else if (i->arg_type == TOK_ABS_IDENTIFIER) {
             incr_curr_addr(2);
