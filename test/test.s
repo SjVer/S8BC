@@ -7,4 +7,4 @@ start:
 
     hlt
 
-$fffe: .word #start
+$fffe: .word start

@@ -1,17 +1,9 @@
-#pragma once
-#define SPECS_H
+package spec
 
-#include "common.h"
+// Endianness is big!
 
-#define WORD_SIZE 16
-
-typedef uint16_t word;
-
-#define ENDIANNESS "little"
-
-#define CYCLE_DELAY 2500
-
-#define MEMORY_SIZE (0xffff + 1)
+WORD_SIZE :: 16
+Word :: u16
 
 /*
   memory map:
@@ -46,35 +38,36 @@ typedef uint16_t word;
           └─────────┘
 */
 
+// 32kb
+MEMORY_SIZE :: 0xffff + 1
+
 // 16kb (16384 bytes)
-#define RAM_START 0x0000
-#define RAM_END 0x3fff
+RAM_START :: 0x0000
+RAM_END :: 0x3fff
 
 // 255 bytes
-#define ZERO_PAGE_START 0x0000
-#define ZERO_PAGE_END 0x00ff // incl.
+ZERO_PAGE_START :: 0x0000
+ZERO_PAGE_END :: 0x00ff // incl.
 
 // 255 bytes
-#define STACK_START 0x0100
-#define STACK_END 0x01ff // incl.
+STACK_START :: 0x0100
+STACK_END :: 0x01ff // incl.
 
 // 255 bytes
-#define IO_START 0x0200
-#define IO_END 0x02ff // incl.
-enum {
-	IO_TTY_INPUT  = 0x0201,
-    IO_TTY_OUTPUT = 0x0202,
-};
+IO_START :: 0x0200
+IO_END :: 0x02ff // incl.
+
+IO_TTY_INPUT  :: 0x0201
+IO_TTY_OUTPUT :: 0x0202
 
 // 32kb (32768 bytes)
-#define ROM_START 0x8000
-#define ROM_END 0xffff // incl.
-#define ROM_SIZE (ROM_END - ROM_START + 1)
+ROM_START :: 0x8000
+ROM_END :: 0xffff // incl.
+ROM_SIZE :: (ROM_END - ROM_START + 1)
 
-// 16 bytes (8 vectors)
-#define VECTORS_START 0xfffc
-#define VECTORS_END 0xffff // incl.
-enum {
-	INPUT_VECTOR = 0xfffc,
-	RESET_VECTOR = 0xfffe,
-};
+// 4 bytes (2 vectors)
+VECTORS_START :: 0xfffc
+VECTORS_END :: 0xffff // incl.
+
+INPUT_VECTOR :: 0xfffc
+RESET_VECTOR :: 0xfffe
