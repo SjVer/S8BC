@@ -63,6 +63,10 @@ $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT) | makedirs
 	@$(CC) $(CXXFLAGS) -I$(INCDIR) -o $@ -c $<
 	@printf "\b\b done!\n"
 
+.PHONY: dis
+dis:
+	odin run dis -out:$(BINDIR)/dis -- bin/test.rom
+
 # ===================== TOOLS =====================
 
 test-as: as
