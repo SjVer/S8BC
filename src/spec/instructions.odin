@@ -1,6 +1,7 @@
 package spec
 
 OperandMode :: enum {
+    None,
     Imm, // immediate (literal byte)
     Imp, // implied (byte in A)
     OpX, // operand X (byte in/at X)

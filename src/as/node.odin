@@ -1,5 +1,7 @@
 package as
 
+import "../spec"
+
 word :: u16
 
 Node_Type :: enum {
@@ -10,9 +12,9 @@ Node_Type :: enum {
 }
 
 Raw_Data_Node :: struct {
-    length : int,
+    length : uint,
     as : union {
-        Identifier,
+        string,
         byte,
         word,
         []byte
@@ -25,17 +27,17 @@ Alias_Node :: struct {
 }
 
 Label_Node :: union {
-    Identifier,
+    string,
     word,
 }
 
 Instr_Node :: struct {
     instr : Instruction,
-    op_type : Token_Type,
+    op_mode : spec.OperandMode,
     operand : union {
-        Identifier,
-        byte,
-        word,
+        string,
+        Imm_Literal,
+        Abs_Literal,
     }
 }
 

@@ -148,7 +148,7 @@ l_is_hex_digit :: proc(ch : rune) -> bool {
     return false
 }
 
-l_number :: proc(do_offset := false) -> Literal {
+l_number :: proc(do_offset := false) -> uint {
     base : int
     descr : string
 
@@ -210,19 +210,19 @@ l_any_value :: proc() -> Token {
             if n > 0xff { 
                 abort("immediate l_number '%d' too large at l_line %d", n, l_line)
             }
-            return l_make_token(.Imm_Literal, n)
+            return l_make_token(.Imm_Literal, Imm_Literal(n))
         }
         else if first_char == '@' {
             if n > 0xff { 
                 abort("l_offset '%d' too large at l_line %d", n, l_line)
             }
-            return l_make_token(.Stk_Literal, n)
+            return l_make_token(.Stk_Literal, Imm_Literal(n))
         }
         else {
             if n > 0xffff { 
                 abort("l_number '%d' too large at l_line %d", n, l_line)
             }
-            return l_make_token(.Abs_Literal, n)
+            return l_make_token(.Abs_Literal, Abs_Literal(n))
         }
     }
 }

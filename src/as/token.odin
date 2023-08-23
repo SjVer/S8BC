@@ -80,15 +80,15 @@ Instruction :: enum {
     HLT,
 }
 
-Identifier :: string
-// the parser can worry abt the size
-Literal :: uint
+Imm_Literal :: byte
+Abs_Literal :: word
 
 Token_As :: union {
     Directive,
     Instruction,
-    Literal,
-    Identifier,
+    Imm_Literal,
+    Abs_Literal,
+    string
 }
 
 Token :: struct {

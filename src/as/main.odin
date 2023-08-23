@@ -28,8 +28,7 @@ main :: proc() {
     // read file
     data, success := os.read_entire_file_from_filename(args.asm_file)
     if !success {
-        log.error("could not read", args.asm_file)
-        os.exit(1)
+        abort("could not read %s", args.asm_file)
     }
     src := string(data)
 
@@ -38,4 +37,9 @@ main :: proc() {
     init_parser()
 
     nodes := parse()
+    solve_addresses(nodes)
+
+    for node in nodes {
+        log.debugf("$%04x: %v", node.address, node.as)
+    }
 }
