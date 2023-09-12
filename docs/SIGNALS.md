@@ -24,7 +24,6 @@
 1. ^
 1. ALU/A
 1. DB/A
-1. A/ALU
 1. A/DB
 1. SP-Inc
 1. SP-Dec
