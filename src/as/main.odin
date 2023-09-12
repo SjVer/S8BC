@@ -36,10 +36,19 @@ main :: proc() {
     init_lexer(src)
     init_parser()
 
+    // parse and solve addresses
     nodes := parse()
     solve_addresses(nodes)
 
     for node in nodes {
         log.debugf("$%04x: %v", node.address, node.as)
+    }
+
+    // codegen
+    rom := generate_rom(nodes)
+
+    // write to file
+    if !os.write_entire_file(args.out_file, rom) {
+        abort("could not write %s", args.out_file)
     }
 }
