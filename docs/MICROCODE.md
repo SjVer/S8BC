@@ -1,58 +1,69 @@
 # Microcode
 
+# Aliases
+
+<!-- ALIAS_START -->
+| name | signals |
+| --- | --- |
+| `Fetch->DB` | `PCL/ABL, PCH/ABH, AB/DP, Mem/DB, PC-En`
+| `AR->PC` | `AR/AB, AB/PC`
+<!-- ALIAS_END -->
+
+## Instruction steps
+
 <!-- CODE_START -->
 | opcode | instruction  | step | control signals
 | --- | --- | --- | --- |
-| $XX | *any*           | 1 | `PC/AB, AB/DP, Mem/DB, DB/IR; PC-En`
+| $XX | *any*           | 1 | `Fetch->DB, DB/IR`
 | $00 | `nop`           | 2 | `End`
-| $01 | `lda` immediate | 2 | `PC/AB, AB/DP, Mem/DB, DB/A; PC-En`
+| $01 | `lda` immediate | 2 | `Fetch->DB, DB/A`
 |     |                 | 3 | `End`
-| $02 | `lda` operand X | 2 | `X/DB, DB/ABL, PCH/ABH, AB/DP`
+| $02 | `lda` operand X | 2 | `X/DB, DL-Lo, PCH/ABH, AB/DP`
 |     |                 | 3 | `Mem/DB, DB/A`
 |     |                 | 4 | `End`
-| $03 | `lda` operand Y | 2 | `Y/DB, DB/ABL, PCH/ABH, AB/DP`
+| $03 | `lda` operand Y | 2 | `Y/DB, DL-Lo, PCH/ABH, AB/DP`
 |     |                 | 3 | `Mem/DB, DB/A`
 |     |                 | 4 | `End`
-| $04 | `lda` absolute  | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
+| $04 | `lda` absolute  | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
 |     |                 | 4 | `AR/AB, AB/DP, Mem/DB, DB/A`
 |     |                 | 5 | `End`
-| $05 | `ldx` immediate | 2 | `PC/AB, AB/DP, Mem/DB, DB/X; PC-En`
+| $05 | `ldx` immediate | 2 | `Fetch->DB, DB/X`
 |     |                 | 3 | `End`
-| $06 | `ldx` operand Y | 2 | `Y/DB, DB/ABL, PCH/ABH, AB/DP`
+| $06 | `ldx` operand Y | 2 | `Y/DB, DL-Lo, PCH/ABH, AB/DP`
 |     |                 | 3 | `Mem/DB, DB/X`
 |     |                 | 4 | `End`
-| $07 | `ldx` absolute  | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
+| $07 | `ldx` absolute  | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
 |     |                 | 4 | `AR/AB, AB/DP, Mem/DB, DB/X`
 |     |                 | 5 | `End`
-| $08 | `ldy` immediate | 2 | `PC/AB, AB/DP, Mem/DB, DB/Y; PC-En`
+| $08 | `ldy` immediate | 2 | `Fetch->DB, DB/Y`
 |     |                 | 3 | `End`
-| $09 | `ldy` operand X | 2 | `X/DB, DB/ABL, PCH/ABH, AB/DP`
+| $09 | `ldy` operand X | 2 | `X/DB, DL-Lo, PCH/ABH, AB/DP`
 |     |                 | 3 | `Mem/DB, DB/Y`
 |     |                 | 4 | `End`
-| $0A | `ldy` absolute  | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
+| $0A | `ldy` absolute  | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
 |     |                 | 4 | `AR/AB, AB/DP, Mem/DB, DB/Y`
 |     |                 | 5 | `End`
 | $0B | `ldi` absolute  | 2 | ``
 |     |                 | 3 | `End`
-| $0C | `sta` operand X | 2 | `X/DB, DB/ABL, PCH/ABH, AB/DP`
+| $0C | `sta` operand X | 2 | `X/DB, DL-Lo, PCH/ABH, AB/DP`
 |     |                 | 3 | `A/DB, DB/Mem`
 |     |                 | 4 | `End`
-| $0D | `sta` operand Y | 2 | `Y/DB, DB/ABL, PCH/ABH, AB/DP`
+| $0D | `sta` operand Y | 2 | `Y/DB, DL-Lo, PCH/ABH, AB/DP`
 |     |                 | 3 | `A/DB, DB/Mem`
 |     |                 | 4 | `End`
-| $0E | `sta` absolute  | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
+| $0E | `sta` absolute  | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
 |     |                 | 4 | `AR/AB, AB/DP, A/DB, DB/Mem`
 |     |                 | 5 | `End`
-| $0F | `stx` absolute  | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
+| $0F | `stx` absolute  | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
 |     |                 | 4 | `AR/AB, AB/DP, X/DB, DB/Mem`
 |     |                 | 5 | `End`
-| $10 | `sty` absolute  | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
+| $10 | `sty` absolute  | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
 |     |                 | 4 | `AR/AB, AB/DP, Y/DB, DB/Mem`
 |     |                 | 5 | `End`
 | $11 | `sti` absolute  | 2 | ``
@@ -83,22 +94,22 @@
 |     |                 | 3 | `End`
 | $1B | `psh` immediate | 2 | ``
 |     |                 | 3 | `End`
-| $1C | `psh` implied   | 2 | `SPD`
+| $1C | `psh` implied   | 2 | `SP-Dec`
 |     |                 | 3 | `SP/AB, AB/DP, A/DB, DB/Mem`
 |     |                 | 4 | `End`
-| $1D | `psh` operand X | 2 | `SPD`
+| $1D | `psh` operand X | 2 | `SP-Dec`
 |     |                 | 3 | `SP/AB, AB/DP, X/DB, DB/Mem`
 |     |                 | 4 | `End`
-| $1E | `psh` operand Y | 2 | `SPD`
+| $1E | `psh` operand Y | 2 | `SP-Dec`
 |     |                 | 3 | `SP/AB, AB/DP, Y/DB, DB/Mem`
 |     |                 | 4 | `End`
 | $1F | `pll`           | 2 | `SP/AB, AB/DP, Mem/DB, DB/A`
 |     |                 | 3 | `End`
-| $20 | `pop` implied   | 2 | `SP/AB, AB/DP, Mem/DB, DB/A; SPI`
+| $20 | `pop` implied   | 2 | `SP/AB, AB/DP, Mem/DB, DB/A, SP-Inc`
 |     |                 | 3 | `End`
-| $21 | `pop` operand X | 2 | `SP/AB, AB/DP, Mem/DB, DB/X; SPI`
+| $21 | `pop` operand X | 2 | `SP/AB, AB/DP, Mem/DB, DB/X, SP-Inc`
 |     |                 | 3 | `End`
-| $22 | `pop` operand Y | 2 | `SP/AB, AB/DP, Mem/DB, DB/Y; SPI`
+| $22 | `pop` operand Y | 2 | `SP/AB, AB/DP, Mem/DB, DB/Y, SP-Inc`
 |     |                 | 3 | `End`
 | $23 | `and` immediate | 2 | ``
 |     |                 | 3 | `End`
@@ -186,64 +197,64 @@
 |     |                 | 3 | `End`
 | $4D | `cmp` absolute  | 2 | ``
 |     |                 | 3 | `End`
-| $4E | `jmp`           | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH`
+| $4E | `jmp`           | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
+|     |                 | 4 | `AR->PC`
 |     |                 | 5 | `End`
-| $4F | `jzs`           | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, Z/JE`
+| $4F | `jzs`           | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
+<!-- |     |                 | 4 | `AR->PC, Z/JE` -->
 |     |                 | 5 | `End`
-| $50 | `jzn`           | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, Z/JE, IJE`
+| $50 | `jzn`           | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
+<!-- |     |                 | 4 | `AR->PC, Z/JE, JE-Inv` -->
 |     |                 | 5 | `End`
-| $51 | `jcs`           | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, C/JE`
+| $51 | `jcs`           | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
+<!-- |     |                 | 4 | `AR->PC, C/JE` -->
 |     |                 | 5 | `End`
-| $52 | `jcn`           | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, C/JE, IJE`
+| $52 | `jcn`           | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
+<!-- |     |                 | 4 | `AR->PC, C/JE, JE-Inv` -->
 |     |                 | 5 | `End`
-| $53 | `jes`           | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, E/JE`
+| $53 | `jes`           | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
+<!-- |     |                 | 4 | `AR->PC, E/JE` -->
 |     |                 | 5 | `End`
-| $54 | `jen`           | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, E/JE, IJE`
+| $54 | `jen`           | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
+<!-- |     |                 | 4 | `AR->PC, E/JE, JE-Inv` -->
 |     |                 | 5 | `End`
-| $55 | `jls`           | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, L/JE`
+| $55 | `jls`           | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
+<!-- |     |                 | 4 | `AR->PC, L/JE` -->
 |     |                 | 5 | `End`
-| $56 | `jln`           | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, L/JE, IJE`
+| $56 | `jln`           | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
+<!-- |     |                 | 4 | `AR->PC, L/JE, JE-Inv` -->
 |     |                 | 5 | `End`
-| $57 | `jgs`           | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, G/JE`
+| $57 | `jgs`           | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
+<!-- |     |                 | 4 | `AR->PC, G/JE` -->
 |     |                 | 5 | `End`
-| $58 | `jgn`           | 2 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 3 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH, G/JE, IJE`
+| $58 | `jgn`           | 2 | `Fetch->DB, DB/ARL`
+|     |                 | 3 | `Fetch->DB, DB/ARH`
+<!-- |     |                 | 4 | `AR->PC, G/JE, JE-Inv` -->
 |     |                 | 5 | `End`
-| $59 | `cll`           | 2 | `SPD`
-|     |                 | 3 | `SP/AB, AB/DP, PCH/DB, DB/Mem, SDP`
+| $59 | `cll`           | 2 | `SP-Dec`
+|     |                 | 3 | `SP/AB, AB/DP, PCH/DB, DB/Mem, SP-Dec`
 |     |                 | 4 | `SP/AB, AB/DP, PCL/DB, DB/Mem`
-|     |                 | 5 | `PC/AB, AB/DP, Mem/DB, DB/ARL; PC-En`
-|     |                 | 6 | `PC/AB, AB/DP, Mem/DB, DB/ARH; PC-En`
-|     |                 | 7 | `AR/AB, ABL/PCL, ABH/PCH`
-| $5A | `ret`           | 2 | `SP/AB, AB/DP, Mem/DB, DB/ARL; SPI`
-|     |                 | 3 | `SP/AB, AB/DP, Mem/DB, DB/ARL; SPI`
-|     |                 | 4 | `AR/AB, ABL/PCL, ABH/PCH`
+|     |                 | 5 | `Fetch->DB, DB/ARL`
+|     |                 | 6 | `Fetch->DB, DB/ARH`
+|     |                 | 7 | `AR->PC`
+| $5A | `ret`           | 2 | `SP/AB, AB/DP, Mem/DB, DB/ARL, SP-Inc`
+|     |                 | 3 | `SP/AB, AB/DP, Mem/DB, DB/ARL, SP-Inc`
+|     |                 | 4 | `AR->PC`
 |     |                 | 5 | `End`
-| $5B | `rti`           | 2 | `SP/AB, AB/DP, Mem/DB, DB/S; SPI`
-|     |                 | 3 | `SP/AB, AB/DP, Mem/DB, DB/ARL; SPI`
-|     |                 | 4 | `SP/AB, AB/DP, Mem/DB, DB/ARH; SPI`
-|     |                 | 5 | `AR/AB, ABL/PCL, ABH/PCH`
+| $5B | `rti`           | 2 | `SP/AB, AB/DP, Mem/DB, DB/SR, SP-Inc`
+|     |                 | 3 | `SP/AB, AB/DP, Mem/DB, DB/ARL, SP-Inc`
+|     |                 | 4 | `SP/AB, AB/DP, Mem/DB, DB/ARH, SP-Inc`
+|     |                 | 5 | `AR->PC`
 |     |                 | 6 | `End`
 | $5C | `hlt`           | 2 | `HF-Set`
 |     |                 | 3 | `End`
